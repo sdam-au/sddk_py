@@ -1,3 +1,6 @@
+import requests
+import getpass
+
 def configure_session_and_url():
   '''interactively setup your sciencedata.dk homeurl, username and password'''
   sciencedata_homeurl = "https://sciencedata.dk/files/" ### your personal homeurl 
