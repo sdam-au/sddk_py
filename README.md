@@ -1,7 +1,7 @@
 # sddk
 This is a simple package to upload data to- and dowload data from sciencedata.dk. It is especially designed for working with group folders. It relies mainly on Python requests library.
 
-Main functionality is uploading any python object (dict, list, dataframe) as json file to a preselected group folder and getting it back as the original python object.
+The main functionality is uploading (exporting) any Python object (dict, list, dataframe) as a text or json file to a preselected group folder and getting it back (importing) as an original Python object.
 
 ### Install and import
 
@@ -19,7 +19,7 @@ import sddk
 To run the main configuration function below, you have to know the following:
 * your sciencedata.dk username (e.g. "123456@au.dk"),
 * your sciencedata.dk password (has to be previously configured in the sciencedata.dk web interface),
-* name of the group folder you want to access,
+* name of the group folder you want to access (e.g. "myproject_root_folder"),
 * and, in the case you are not owner of the group, username of the group owner.
 (You will be asked to input these values interactively while running the function)
 
@@ -34,7 +34,7 @@ Upload (export) simple text file:
 s.put(sciencedata_groupurl + testfile.txt, data="textfile content")
 ```
 
-Get it back (import) tp python:
+Get it back (import) to Python:
 
 ```
 string_testfile = s.get(sciencedata_groupurl + testfile.txt).content
