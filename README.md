@@ -7,12 +7,6 @@ sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-inf
 The main functionality of the package is in uploading any Python object (dict, list, dataframe) as a text or json file to a preselected group folder and getting it back into a Python environemnt as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
 
 ### Install and import
-=======
-This is a simple package to upload data to- and dowload data from sciencedata.dk. It is especially designed for working with group folders. It relies mainly on Python requests library.
-
-The main functionality is uploading (exporting) any Python object (dict, list, dataframe) as a text or json file to a preselected group folder and getting it back (importing) as an original Python object.
-
-### Install and import
 
 So far the package is in a testing PyPi repository [here](https://test.pypi.org/project/sddk/). 
 
