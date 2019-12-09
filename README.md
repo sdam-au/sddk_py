@@ -12,52 +12,6 @@ So far the package is in a testing PyPi repository [here](https://test.pypi.org/
 
 To install and import the package within your Python environment (i.e. jupyter notebook) run:
 
-```
-!pip install --index-url https://test.pypi.org/simple/ --no-deps sddk
-import sddk
-```
-
-### Configure session and url to access your group folder 
-
-To run the main configuration function below, you have to know the following:
-* your sciencedata.dk username (e.g. "123456@au.dk"),
-* your sciencedata.dk password (has to be previously configured in the sciencedata.dk web interface),
-* name of the group folder you want to access (e.g. "myproject_root_folder"),
-* and, in the case you are not owner of the group, username of the group owner.
-(You will be asked to input these values interactively while running the function)
-
-```
-s, sciencedata_groupurl = sddk.configure_session_and_url()
-```
-
-### Usage
-
-Upload (export) simple text file:
-```
-s.put(sciencedata_groupurl + testfile.txt, data="textfile content")
-```
-
-Get it back (import) to Python:
-
-```
-string_testfile = s.get(sciencedata_groupurl + testfile.txt).content
-print(string_testfile)
-```
-
-It works well with pickles and jsons (to be documented).
-
-### Next steps
-To develop our own functions:
-
-* `sddk.export_json(sciencedata_groupurl + "jsonfile.json", json_object)`
-* `json_object = sddk.import_json(sciencedata_groupurl + "jsonfile.json")`
-
->>>>>>> 1cf66321e520228de2f8eb008d597936a429fa78
-
-So far the package is in a testing PyPi repository [here](https://test.pypi.org/project/sddk/). 
-
-To install and import the package within your Python environment (i.e. jupyter notebook) run:
-
 ```python
 !pip install --index-url https://test.pypi.org/simple/ --no-deps sddk
 import sddk
@@ -76,7 +30,7 @@ In the case you want to access a group folder, you further need:
 * **group owner's username** (if it is not yours)
 
 (Do not worry, you will be asked to input these values interactively while running the function)
-  
+
 To configure a personal session, run:
 ```python
 s, sddk_url = sddk.configure_session_and_url()
@@ -85,14 +39,14 @@ To configure a session pointing to a group folder, run:
 ```python
 s, sddk_url = sddk.configure_session_and_url("our_group_folder")
 ```
-Running this you configurate two key variables:
-* `s` - a request session authorized by your username and password
-* `sddk_url` - default url address for your request 
+Running this function, you configurate two key variables:
+* `s`: a request session authorized by your username and password
+* `sddk_url`: default url address for your request 
 Below you can inspect how these two are used in typical request commands
 
 ### Usage
 
-##### Text file containing string
+##### String to TXT
 
 Upload (export) simple text file:
 
@@ -107,16 +61,20 @@ string_testfile = ast.literal_eval(s.get(sddk_url + "testfile.txt").text)
 print(string_testfile)
 ```
 
-It works well with pickles and jsons (to be documented).
+##### Pandas DataFrame to JSON
 
-##### Matplotlib figure to PNG
+Upload a dataframe as a json file:
 
 ```python
-import matplotlib.pyplot as plt
-fig = plt.figure()
-plt.plot(range(10))
-fig.savefig('temp.png', dpi=fig.dpi) ### works even in Google colab
-s.put(sddk_url + "temp.png", data = open("temp.png", 'rb'))
+import pandas as pd
+df = pd.DataFrame([("a1", "b1", "c1"), ("a2", "b2", "c2")], columns=["a", "b", "c"]) 
+s.put(sddk_url + "df.json", data=df.to_json())
+```
+
+Get it back:
+
+```python
+df = pd.DataFrame(s.get(sc_groupurl + "df.json").json())
 ```
 
 ##### Pandas DataFrame to CSV
@@ -124,13 +82,9 @@ s.put(sddk_url + "temp.png", data = open("temp.png", 'rb'))
 ```python
 import pandas as pd
 df = pd.DataFrame([("a1", "b1", "c1"), ("a2", "b2", "c2")], columns=["a", "b", "c"]) 
-gospels_jesus_vec.to_csv("df.csv") ### temporal file
+df.to_csv("df.csv") ### temporal file
 s.put(sddk_url + "df.csv", data = open("df.csv", 'rb'))
 ```
-
-##### Pandas DataFrame to JSON
-
-
 
 ##### Dictionary to JSON
 
@@ -147,21 +101,43 @@ From sciencedata.dk:
 dict_object = json.loads(s.get(sddk_url + "dirgot_data/dict_file.json").content)
 ```
 
+##### Matplotlib figure to PNG
+
+```python
+import matplotlib.pyplot as plt
+fig = plt.figure()
+plt.plot(range(10))
+fig.savefig('temp.png', dpi=fig.dpi) ### works even in Google colab
+s.put(sddk_url + "temp.png", data = open("temp.png", 'rb'))
+```
+
 ### Next steps
-(a) check connection functionality during configuration, first after entering the username and passoword, second after setting the group folder
+- to develop our own functions for uploading files and getting them back (asking in case of already existing files, etc.:
 
-* ```python
-if s.get(homeurl).ok:
-    print("connection with personal folder established")
-  ```
-* ```python
-if s.get(groupfolder_url).ok:
-    print("connection with personal folder established")
-  ```
+```python
+def file_from_object(file_name_and_loc, python_object):
+  if s.get(sciencedata_groupurl + file_name_and_loc).ok: ### if there already is a file with the same name
+    new_name = input("file with name \"" + file_name_and_loc.rpartition("/")[2] + "\" already exists in given location. Press Enter to overwrite it or enter a different name (without path)")
+    if len(new_name) == 0:
+      s.put(sciencedata_groupurl + file_name_and_loc, data=json.dumps(python_object))
+    else:
+      if "/" in new_name: ### if it is a path
+        s.put(sciencedata_groupurl + new_name, data=json.dumps(python_object))
+      else: 
+        s.put(sciencedata_groupurl + file_name_and_loc.rpartition("/")[0] + new_name, data=json.dumps(python_object))
+  else:
+    s.put(sciencedata_groupurl + file_name_and_loc, data=json.dumps(python_object))
 
-(b) develop our own functions:
-* `sddk.put_json(sddk_url + "jsonfile.json", json_object)`
-* `json_object = sddk.get_json(sddk_url + "jsonfile.json")`
+def object_from_file(file_name_and_loc):
+  if s.get(sciencedata_groupurl + file_name_and_loc).ok:
+    print("file exists")
+    try: 
+      return json.loads(s.get(sciencedata_groupurl + file_name_and_loc).content) ### if there already is a file with the same name
+    except:
+      print("file import failed")
+  else:
+    print("file does not found; check file name and path.")
+```
 
 
 The package is built following [this](https://packaging.python.org/tutorials/packaging-projects/) tutorial.
