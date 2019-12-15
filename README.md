@@ -12,7 +12,7 @@ So far the package is in a testing PyPi repository [here](https://test.pypi.org/
 
 To install and import the package within your Python environment (i.e. jupyter notebook) run:
 
-```python
+```
 !pip install --index-url https://test.pypi.org/simple/ --no-deps sddk
 import sddk
 ```
