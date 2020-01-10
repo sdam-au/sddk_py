@@ -1,7 +1,6 @@
 README.md
 setup.py
 sddk/__init__.py
-sddk.egg-info/._dependency_links.txt
 sddk.egg-info/PKG-INFO
 sddk.egg-info/SOURCES.txt
 sddk.egg-info/dependency_links.txt

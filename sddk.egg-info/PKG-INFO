@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sddk
-Version: 0.0.7
+Version: 0.0.8
 Summary: A package to access sciencedata.dk
 Home-page: https://github.com/sdam-au/sddk
 Author: Vojtech Kase
@@ -8,11 +8,11 @@ Author-email: vojtech.kase@gmail.com
 License: UNKNOWN
 Description: # sddk
         
-        This is a simple package to upload data to- and dowload data from [sciencedata.dk](https://sciencedata.dk/) . It is especially designed for working with group folders. It relies mainly on Python requests library.
+        This is a simple package to upload data to- and dowload data from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with group folders. It relies mainly on Python requests library.
         
-        sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). One of the strength of sciencedata.dk is that it, currently supports institutional login from 2976 research and educational institutions around the global (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
+        sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). One of the strength of sciencedata.dk is that it currently supports institutional login from 2976 research and educational institutions around the global (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
         
-        The main functionality of the package is in uploading any Python object (dict, list, dataframe) as a text or json file to a preselected group folder and getting it back into a Python environemnt as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
+        The main functionality of the package is in uploading any Python object (dict, list, dataframe) as a text or json file to a preselected shared folder and getting it back into a Python environemnt as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
         
         ### Install and import
         
@@ -25,36 +25,36 @@ Description: # sddk
         import sddk
         ```
         
-        ### Configure session and url to access your group folder 
+        ### Configure session and access endpoint for a shared folder
         
         To run the main configuration function below, you have to know the following:
         * your sciencedata.dk username (e.g. "123456@au.dk" or "kase@zcu.cz"),
         * your sciencedata.dk password (has to be previously configured in the sciencedata.dk web interface),
         
-        In the case you want to access a group folder, you further need:
+        In the case you want to access a shared folder, you further need:
         
-        * **name** of the group folder you want to access (e.g. "our_group_folder"),
+        * **name** of the shared folder you want to access (e.g. "our_shared_folder"),
         
-        * **group owner's username** (if it is not yours)
+        * shared folder owner's username** (if it is not yours)
         
         (Do not worry, you will be asked to input these values interactively while running the function)
-          
+        
         To configure a personal session, run:
         ```python
         s, sddk_url = sddk.configure_session_and_url()
         ```
-        To configure a session pointing to a group folder, run:
+        To configure a session pointing to a shared folder, run:
         ```python
-        s, sddk_url = sddk.configure_session_and_url("our_group_folder")
+        s, sddk_url = sddk.configure_session_and_url("our_shared_folder")
         ```
-        Running this you configurate two key variables:
-        * `s` - a request session authorized by your username and password
-        * `sddk_url` - default url address for your request 
+        Running this function, you configurate two key variables:
+        * `s`: a request session authorized by your username and password
+        * `sddk_url`: default url address (endpoint) for your request 
         Below you can inspect how these two are used in typical request commands
         
         ### Usage
         
-        ##### Text file containing string
+        ##### String to TXT
         
         Upload (export) simple text file:
         
@@ -69,16 +69,20 @@ Description: # sddk
         print(string_testfile)
         ```
         
-        It works well with pickles and jsons (to be documented).
+        ##### Pandas DataFrame to JSON
         
-        ##### Matplotlib figure to PNG
+        Upload a dataframe as a json file:
         
         ```python
-        import matplotlib.pyplot as plt
-        fig = plt.figure()
-        plt.plot(range(10))
-        fig.savefig('temp.png', dpi=fig.dpi) ### works even in Google colab
-        s.put(sddk_url + "temp.png", data = open("temp.png", 'rb'))
+        import pandas as pd
+        df = pd.DataFrame([("a1", "b1", "c1"), ("a2", "b2", "c2")], columns=["a", "b", "c"]) 
+        s.put(sddk_url + "df.json", data=df.to_json())
+        ```
+        
+        Get it back:
+        
+        ```python
+        df = pd.DataFrame(s.get(sc_groupurl + "df.json").json())
         ```
         
         ##### Pandas DataFrame to CSV
@@ -86,13 +90,9 @@ Description: # sddk
         ```python
         import pandas as pd
         df = pd.DataFrame([("a1", "b1", "c1"), ("a2", "b2", "c2")], columns=["a", "b", "c"]) 
-        gospels_jesus_vec.to_csv("df.csv") ### temporal file
+        df.to_csv("df.csv") ### temporal file
         s.put(sddk_url + "df.csv", data = open("df.csv", 'rb'))
         ```
-        
-        ##### Pandas DataFrame to JSON
-        
-        
         
         ##### Dictionary to JSON
         
@@ -109,21 +109,43 @@ Description: # sddk
         dict_object = json.loads(s.get(sddk_url + "dirgot_data/dict_file.json").content)
         ```
         
+        ##### Matplotlib figure to PNG
+        
+        ```python
+        import matplotlib.pyplot as plt
+        fig = plt.figure()
+        plt.plot(range(10))
+        fig.savefig('temp.png', dpi=fig.dpi) ### works even in Google colab
+        s.put(sddk_url + "temp.png", data = open("temp.png", 'rb'))
+        ```
+        
         ### Next steps
-        (a) check connection functionality during configuration, first after entering the username and passoword, second after setting the group folder
+        - to develop our own functions for uploading files and getting them back (asking in case of already existing files, etc.:
         
-        * ```python
-        if s.get(homeurl).ok:
-            print("connection with personal folder established")
-          ```
-        * ```python
-        if s.get(groupfolder_url).ok:
-            print("connection with personal folder established")
-          ```
+        ```python
+        def file_from_object(file_name_and_loc, python_object):
+          if s.get(sciencedata_groupurl + file_name_and_loc).ok: ### if there already is a file with the same name
+            new_name = input("file with name \"" + file_name_and_loc.rpartition("/")[2] + "\" already exists in given location. Press Enter to overwrite it or enter a different name (without path)")
+            if len(new_name) == 0:
+              s.put(sciencedata_groupurl + file_name_and_loc, data=json.dumps(python_object))
+            else:
+              if "/" in new_name: ### if it is a path
+                s.put(sciencedata_groupurl + new_name, data=json.dumps(python_object))
+              else: 
+                s.put(sciencedata_groupurl + file_name_and_loc.rpartition("/")[0] + new_name, data=json.dumps(python_object))
+          else:
+            s.put(sciencedata_groupurl + file_name_and_loc, data=json.dumps(python_object))
         
-        (b) develop our own functions:
-        * `sddk.put_json(sddk_url + "jsonfile.json", json_object)`
-        * `json_object = sddk.get_json(sddk_url + "jsonfile.json")`
+        def object_from_file(file_name_and_loc):
+          if s.get(sciencedata_groupurl + file_name_and_loc).ok:
+            print("file exists")
+            try: 
+              return json.loads(s.get(sciencedata_groupurl + file_name_and_loc).content) ### if there already is a file with the same name
+            except:
+              print("file import failed")
+          else:
+            print("file does not found; check file name and path.")
+        ```
         
         
         The package is built following [this](https://packaging.python.org/tutorials/packaging-projects/) tutorial.
@@ -132,6 +154,7 @@ Description: # sddk
         
         * 0.0.6 - first functional configuration
         * 0.0.7 - configuration of individual session by default
+        * 0.0.8 - shared folders reading&writing for ordinary users finally functional
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3

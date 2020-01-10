@@ -1,7 +1,7 @@
 import requests
 import getpass
 
-def configure_session_and_url(group_folder_name=None): ### insert group folder name or leave empty for personal root
+def configure_session_and_url(shared_folder_name=None): ### insert group folder name or leave empty for personal root
   '''
   interactively setup your sciencedata.dk homeurl, username and password
   in the case of shared folders owned by someone else, ask for owner username
@@ -15,19 +15,19 @@ def configure_session_and_url(group_folder_name=None): ### insert group folder n
   root_folder_url = sciencedata_homeurl
   if s.get(sciencedata_homeurl).ok:
     print("personal connection established")
-    if group_folder_name != None:
-      ### SETTING FOR GROUP FOLDER (you either have to be its owner, or at least know user name of its owner)
-      group_owner_url = "https://sciencedata.dk/files/" + group_folder_name + "/"
-      if s.get(group_owner_url).ok: ### if you are group 
-        root_folder_url = group_owner_url ### use the url as the endpoint
-        print("group connection established with you as owner")
+    if shared_folder_name != None:
+      ### SETTING FOR SHARED FOLDER (you either have to be its owner, or at least know username of its owner)
+      shared_folder_owner_url = "https://sciencedata.dk/files/" + shared_folder_name + "/"
+      if s.get(shared_folder_owner_url).ok: ### if you are owner of the shared folder 
+        root_folder_url = shared_folder_owner_url ### use the url as the endpoint
+        print("connection with shared folder established with you as its owner")
       else: # otherwise use endpoint for "shared with me"
-        group_owner = input("\"" + group_folder_name + "\" owner's username: ") ### in the case Vojtech is the group owner
-        group_member_url = "https://sciencedata.dk/sharingin/" + group_owner + "/" + group_folder_name + "/" 
-        if s.get(group_member_url).ok:
-          root_folder_url = group_member_url
-          print("group connection established with you as member")
+        folder_owner = input("\"" + shared_folder_name + "\" owner's username: ") ### in the case Vojtech is folder owner
+        shared_folder_member_url = "https://sciencedata.dk/sharingin/" + folder_owner + "/" + shared_folder_name + "/" 
+        if s.get(shared_folder_member_url).ok:
+          root_folder_url = shared_folder_member_url
+          print("connection with shared folder established with you as its ordinary user")
         else:
-          print("group connection failed")
-  print("endpoint for requests has been configured to: " + root_folder_url)
+          print("connection with shared folder failed")
+  print("endpoint variable has been configured to: " + root_folder_url)
   return s, root_folder_url

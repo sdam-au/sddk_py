@@ -2,9 +2,9 @@
 
 This is a simple package to upload data to- and dowload data from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with group folders. It relies mainly on Python requests library.
 
-sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). One of the strength of sciencedata.dk is that it, currently supports institutional login from 2976 research and educational institutions around the global (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
+sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). One of the strength of sciencedata.dk is that it currently supports institutional login from 2976 research and educational institutions around the global (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
 
-The main functionality of the package is in uploading any Python object (dict, list, dataframe) as a text or json file to a preselected group folder and getting it back into a Python environemnt as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
+The main functionality of the package is in uploading any Python object (dict, list, dataframe) as a text or json file to a preselected shared folder and getting it back into a Python environemnt as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
 
 ### Install and import
 
@@ -17,17 +17,17 @@ To install and import the package within your Python environment (i.e. jupyter n
 import sddk
 ```
 
-### Configure session and url to access your group folder 
+### Configure session and access endpoint for a shared folder
 
 To run the main configuration function below, you have to know the following:
 * your sciencedata.dk username (e.g. "123456@au.dk" or "kase@zcu.cz"),
 * your sciencedata.dk password (has to be previously configured in the sciencedata.dk web interface),
 
-In the case you want to access a group folder, you further need:
+In the case you want to access a shared folder, you further need:
 
-* **name** of the group folder you want to access (e.g. "our_group_folder"),
+* **name** of the shared folder you want to access (e.g. "our_shared_folder"),
 
-* **group owner's username** (if it is not yours)
+* shared folder owner's username** (if it is not yours)
 
 (Do not worry, you will be asked to input these values interactively while running the function)
 
@@ -35,13 +35,13 @@ To configure a personal session, run:
 ```python
 s, sddk_url = sddk.configure_session_and_url()
 ```
-To configure a session pointing to a group folder, run:
+To configure a session pointing to a shared folder, run:
 ```python
-s, sddk_url = sddk.configure_session_and_url("our_group_folder")
+s, sddk_url = sddk.configure_session_and_url("our_shared_folder")
 ```
 Running this function, you configurate two key variables:
 * `s`: a request session authorized by your username and password
-* `sddk_url`: default url address for your request 
+* `sddk_url`: default url address (endpoint) for your request 
 Below you can inspect how these two are used in typical request commands
 
 ### Usage
@@ -146,3 +146,4 @@ The package is built following [this](https://packaging.python.org/tutorials/pac
 
 * 0.0.6 - first functional configuration
 * 0.0.7 - configuration of individual session by default
+* 0.0.8 - shared folders reading&writing for ordinary users finally functional
