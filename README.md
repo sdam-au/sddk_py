@@ -1,6 +1,6 @@
 # sddk
 
-This is a simple package to upload data to- and dowload data from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with group folders. It relies mainly on Python requests library.
+This is a simple Python package to upload data to- and dowload data from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with group folders. It relies mainly on Python requests library.
 
 sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). One of the strength of sciencedata.dk is that it currently supports institutional login from 2976 research and educational institutions around the global (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
 
@@ -12,7 +12,7 @@ So far the package is in a testing PyPi repository [here](https://test.pypi.org/
 
 To install and import the package within your Python environment (i.e. jupyter notebook) run:
 
-```python
+```
 !pip install --index-url https://test.pypi.org/simple/ --no-deps sddk
 import sddk
 ```
