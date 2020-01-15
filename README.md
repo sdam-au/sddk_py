@@ -74,7 +74,7 @@ s.put(sddk_url + "df.json", data=df.to_json())
 Get it back:
 
 ```python
-df = pd.DataFrame(s.get(sc_groupurl + "df.json").json())
+df = pd.DataFrame(s.get(sddk_url + "df.json").json())
 ```
 
 ##### Pandas DataFrame to CSV
