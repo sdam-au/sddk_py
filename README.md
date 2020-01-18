@@ -13,7 +13,7 @@ So far the package is in a testing PyPi repository [here](https://test.pypi.org/
 To install and import the package within your Python environment (i.e. jupyter notebook) run:
 
 ```
-!pip install --index-url https://test.pypi.org/simple/ --no-deps sddk
+!pip install sddk
 import sddk
 ```
 
@@ -27,7 +27,7 @@ In the case you want to access a shared folder, you further need:
 
 * **name** of the shared folder you want to access (e.g. "our_shared_folder"),
 
-* shared folder owner's username** (if it is not yours)
+* **username** of the owner of the folder (if it is not yours)
 
 (Do not worry, you will be asked to input these values interactively while running the function)
 
@@ -37,7 +37,7 @@ s, sddk_url = sddk.configure_session_and_url()
 ```
 To configure a session pointing to a shared folder, run:
 ```python
-s, sddk_url = sddk.configure_session_and_url("our_shared_folder")
+s, sddk_url = sddk.configure_session_and_url("our_shared_folder", "owner_username@au.dk")
 ```
 Running this function, you configurate two key variables:
 * `s`: a request session authorized by your username and password
@@ -147,3 +147,4 @@ The package is built following [this](https://packaging.python.org/tutorials/pac
 * 0.0.6 - first functional configuration
 * 0.0.7 - configuration of individual session by default
 * 0.0.8 - shared folders reading&writing for ordinary users finally functional
+* 0.1.1 - added shared folder owner argument to the main configuration function; migration from test.pypi to real pypi

@@ -1,10 +1,10 @@
 import requests
 import getpass
 
-def configure_session_and_url(shared_folder_name=None): ### insert group folder name or leave empty for personal root
+def configure_session_and_url(shared_folder_name=None, owner=None): ### insert group folder name or leave empty for personal root
   '''
   interactively setup your sciencedata.dk homeurl, username and password
-  in the case of shared folders owned by someone else, ask for owner username
+  in the case of shared folder, inquire for its owner as well
   '''
   sciencedata_homeurl = "https://sciencedata.dk/files/" ### your personal homeurl 
   username = input("sciencedata.dk username (format '123456@au.dk'): ")
@@ -22,8 +22,9 @@ def configure_session_and_url(shared_folder_name=None): ### insert group folder 
         root_folder_url = shared_folder_owner_url ### use the url as the endpoint
         print("connection with shared folder established with you as its owner")
       else: # otherwise use endpoint for "shared with me"
-        folder_owner = input("\"" + shared_folder_name + "\" owner's username: ") ### in the case Vojtech is folder owner
-        shared_folder_member_url = "https://sciencedata.dk/sharingin/" + folder_owner + "/" + shared_folder_name + "/" 
+        if owner==None:
+          owner = input("\"" + shared_folder_name + "\" owner's username: ") ### in the case Vojtech is folder owner
+        shared_folder_member_url = "https://sciencedata.dk/sharingin/" + owner + "/" + shared_folder_name + "/" 
         if s.get(shared_folder_member_url).ok:
           root_folder_url = shared_folder_member_url
           print("connection with shared folder established with you as its ordinary user")

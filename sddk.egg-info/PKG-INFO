@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sddk
-Version: 0.0.8
+Version: 0.1.1
 Summary: A package to access sciencedata.dk
 Home-page: https://github.com/sdam-au/sddk
 Author: Vojtech Kase
@@ -8,7 +8,7 @@ Author-email: vojtech.kase@gmail.com
 License: UNKNOWN
 Description: # sddk
         
-        This is a simple package to upload data to- and dowload data from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with group folders. It relies mainly on Python requests library.
+        This is a simple Python package to upload data to- and dowload data from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with group folders. It relies mainly on Python requests library.
         
         sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). One of the strength of sciencedata.dk is that it currently supports institutional login from 2976 research and educational institutions around the global (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
         
@@ -20,8 +20,8 @@ Description: # sddk
         
         To install and import the package within your Python environment (i.e. jupyter notebook) run:
         
-        ```python
-        !pip install --index-url https://test.pypi.org/simple/ --no-deps sddk
+        ```
+        !pip install sddk
         import sddk
         ```
         
@@ -35,7 +35,7 @@ Description: # sddk
         
         * **name** of the shared folder you want to access (e.g. "our_shared_folder"),
         
-        * shared folder owner's username** (if it is not yours)
+        * **username** of the owner of the folder (if it is not yours)
         
         (Do not worry, you will be asked to input these values interactively while running the function)
         
@@ -45,7 +45,7 @@ Description: # sddk
         ```
         To configure a session pointing to a shared folder, run:
         ```python
-        s, sddk_url = sddk.configure_session_and_url("our_shared_folder")
+        s, sddk_url = sddk.configure_session_and_url("our_shared_folder", "owner_username@au.dk")
         ```
         Running this function, you configurate two key variables:
         * `s`: a request session authorized by your username and password
@@ -82,7 +82,7 @@ Description: # sddk
         Get it back:
         
         ```python
-        df = pd.DataFrame(s.get(sc_groupurl + "df.json").json())
+        df = pd.DataFrame(s.get(sddk_url + "df.json").json())
         ```
         
         ##### Pandas DataFrame to CSV
@@ -155,6 +155,7 @@ Description: # sddk
         * 0.0.6 - first functional configuration
         * 0.0.7 - configuration of individual session by default
         * 0.0.8 - shared folders reading&writing for ordinary users finally functional
+        * 0.1.1 - added shared folder owner argument to the main configuration function; migration from test.pypi to real pypi
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
