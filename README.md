@@ -1,14 +1,12 @@
 # sddk
 
-This is a simple Python package to upload data to- and dowload data from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with group folders. It relies mainly on Python requests library.
+This is a simple Python package to write files to- and read files from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with shared folders. It relies mainly upon Python requests library.
 
 sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). One of the strength of sciencedata.dk is that it currently supports institutional login from 2976 research and educational institutions around the global (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
 
 The main functionality of the package is in uploading any Python object (dict, list, dataframe) as a text or json file to a preselected shared folder and getting it back into a Python environemnt as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
 
 ### Install and import
-
-So far the package is in a testing PyPi repository [here](https://test.pypi.org/project/sddk/). 
 
 To install and import the package within your Python environment (i.e. jupyter notebook) run:
 
@@ -115,6 +113,13 @@ s.put(sddk_url + "temp.png", data = open("temp.png", 'rb'))
 - to develop our own functions for uploading files and getting them back (asking in case of already existing files, etc.:
 
 ```python
+def write_file(python_object, filename_and_loc):
+  s.put()
+
+def read_file(python_object, filename_and_loc, object_type="df"):
+	s.get()
+
+  
 def file_from_object(file_name_and_loc, python_object):
   if s.get(sciencedata_groupurl + file_name_and_loc).ok: ### if there already is a file with the same name
     new_name = input("file with name \"" + file_name_and_loc.rpartition("/")[2] + "\" already exists in given location. Press Enter to overwrite it or enter a different name (without path)")
@@ -148,3 +153,4 @@ The package is built following [this](https://packaging.python.org/tutorials/pac
 * 0.0.7 - configuration of individual session by default
 * 0.0.8 - shared folders reading&writing for ordinary users finally functional
 * 0.1.1 - added shared folder owner argument to the main configuration function; migration from test.pypi to real pypi
+* 0.1.2 - added redirection
