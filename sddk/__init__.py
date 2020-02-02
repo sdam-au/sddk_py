@@ -1,4 +1,5 @@
 import requests
+import ast
 import getpass
 
 def configure_session_and_url(shared_folder_name=None, owner=None): ### insert group folder name or leave empty for personal root
@@ -41,3 +42,78 @@ def configure_session_and_url(shared_folder_name=None, owner=None): ### insert g
     break
   print("endpoint variable has been configured to: " + root_folder_url)
   return s, root_folder_url
+
+  def make_data_from_object(python_object):
+  '''
+  process the object you want to write
+  '''
+  if isinstance(python_object, str):
+    return (type(python_object), python_object)
+  if isinstance(python_object, pd.core.frame.DataFrame): ### if it is pandas dataframe
+    return (type(python_object), python_object.to_json())
+  if isinstance(python_object, dict):
+    return (type(python_object), json.dumps(python_object))
+  if isinstance(python_object, list):
+    return (type(python_object), json.dumps(python_object))
+  if isinstance(python_object, plt.Figure):
+    python_object.savefig('temp.png', dpi=fig.dpi)
+    return (type(python_object), open("temp.png", 'rb'))
+  else:
+    print("The function does not support " + str(type(python_object)) + " type of objects. Change the format of your data.")
+
+def check_path(path_and_filename):
+  while not s.get(sddk_url + path_and_filename.rpartition("/")[0]).ok:
+    path_and_filename = input("The path is not valid. Try different path and filename: ")
+  if s.get(sddk_url + path_and_filename.rpartition("/")[0]).ok:
+    return path_and_filename
+  else:
+    print("Sorry, it is still not okay.")
+
+def check_filename(path_and_filename): 
+  '''
+  check whether there  exist a file with the same name
+  '''
+  if s.get(sddk_url + path_and_filename).ok: ### if there already is a file with the same name
+    print("A file with the same name (\"" + path_and_filename.rpartition("/")[2] + "\") already exists in this location.")
+    approved_name = input("Press Enter to overwrite it or choose different path and filename: ")
+    if len(approved_name) == 0: 
+      approved_name = path_and_filename
+  else:
+    approved_name = path_and_filename           
+  return approved_name
+
+def write_file(path_and_filename, python_object):
+  '''
+  write the file to the specified location
+  '''
+  data_processed = make_data_from_object(python_object)
+  path_and_filename = check_path(path_and_filename)
+  approved_name = check_filename(path_and_filename)
+  try:
+    if not approved_name.rpartition(".")[2] in ["txt", "json", "png"]:
+      new_filename_ending = input("Unsupported file format. Type either \"txt\", \"json\", or \"png\": ")
+      approved_name = approved_name.rpartition(".")[0] + "." + new_filename_ending
+      approved_name = check_filename(approved_name) ### check whether the file exists for the second time (the ending changed)
+    s.put(sddk_url + approved_name, data=data_processed[1])
+    print("Your " + str(data_processed[0]) + " object has been succefully written as \"" + sddk_url + approved_name + "\"")
+  except:
+    print("Something went wrong. Check path, filename and object.")
+
+
+def read_file(path_and_filename, object_type):
+  response = s.get(sddk_url + path_and_filename)
+  if response.ok:
+    try: 
+      if object_type == "str":
+        object_to_return = response.text
+      if object_type == "df":
+        object_to_return = pd.DataFrame(response.json())
+      if object_type == "dict":
+        object_to_return = json.loads(response.content)
+      if object_type == "list":
+        object_to_return = json.loads(response.content)
+      return object_to_return
+    except:
+      print("file import failed")
+  else:
+    print("file has not been found; check filename and path.")
