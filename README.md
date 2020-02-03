@@ -10,7 +10,7 @@ The main functionality of the package is in uploading any Python object (dict, l
 
 To install and import the package within your Python environment (i.e. jupyter notebook) run:
 
-```python
+```
 !pip install sddk ### to be updated, use flag --ignore-installed
 from sddk import * ### import all functions
 ```
@@ -219,3 +219,5 @@ The package is built following [this](https://packaging.python.org/tutorials/pac
 * 0.1.1 - added shared folder owner argument to the main configuration function; migration from test.pypi to real pypi
 * 0.1.2 - added redirection
 * 1.0 - added functions `write_file()` and `read_file()`
+* 1.1 - a simple correction
+
