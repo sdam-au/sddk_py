@@ -1,6 +1,7 @@
 import requests
-import ast
+import pandas as pd
 import getpass
+import matplotlib.pyplot as plt
 
 def configure_session_and_url(shared_folder_name=None, owner=None): ### insert group folder name or leave empty for personal root
   '''
@@ -43,7 +44,7 @@ def configure_session_and_url(shared_folder_name=None, owner=None): ### insert g
   print("endpoint variable has been configured to: " + root_folder_url)
   return s, root_folder_url
 
-  def make_data_from_object(python_object):
+def make_data_from_object(python_object):
   '''
   process the object you want to write
   '''
