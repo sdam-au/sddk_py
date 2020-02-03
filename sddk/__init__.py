@@ -42,7 +42,7 @@ def configure_session_and_url(shared_folder_name=None, owner=None): ### insert g
             print("connection with shared folder failed")
     break
   print("endpoint variable has been configured to: " + root_folder_url)
-  return s, root_folder_url
+  return (s, root_folder_url)
 
 def make_data_from_object(python_object):
   '''
@@ -62,19 +62,19 @@ def make_data_from_object(python_object):
   else:
     print("The function does not support " + str(type(python_object)) + " type of objects. Change the format of your data.")
 
-def check_path(path_and_filename):
-  while not s.get(sddk_url + path_and_filename.rpartition("/")[0]).ok:
+def check_path(path_and_filename, conf):
+  while not conf[0].get(conf[1] + path_and_filename.rpartition("/")[0]).ok:
     path_and_filename = input("The path is not valid. Try different path and filename: ")
-  if s.get(sddk_url + path_and_filename.rpartition("/")[0]).ok:
+  if conf[0].get(conf[1] + path_and_filename.rpartition("/")[0]).ok:
     return path_and_filename
   else:
     print("Sorry, it is still not okay.")
 
-def check_filename(path_and_filename): 
+def check_filename(path_and_filename, conf): 
   '''
   check whether there  exist a file with the same name
   '''
-  if s.get(sddk_url + path_and_filename).ok: ### if there already is a file with the same name
+  if conf[0].get(conf[1] + path_and_filename).ok: ### if there already is a file with the same name
     print("A file with the same name (\"" + path_and_filename.rpartition("/")[2] + "\") already exists in this location.")
     approved_name = input("Press Enter to overwrite it or choose different path and filename: ")
     if len(approved_name) == 0: 
@@ -83,13 +83,21 @@ def check_filename(path_and_filename):
     approved_name = path_and_filename           
   return approved_name
 
-def write_file(path_and_filename, python_object):
+def write_file(path_and_filename, python_object, conf=None):
   '''
   write the file to the specified location
   '''
+  if conf==None:
+    shared_folder = input("Type shared folder name or press Enter to skip: ")
+    if shared_folder != "":
+      conf = configure_session_and_url(shared_folder)
+    else:
+      conf = configure_session_and_url()
+  s = conf[0]
+  sddk_url = conf[1]
   data_processed = make_data_from_object(python_object)
-  path_and_filename = check_path(path_and_filename)
-  approved_name = check_filename(path_and_filename)
+  path_and_filename = check_path(path_and_filename, conf)
+  approved_name = check_filename(path_and_filename, conf)
   try:
     if not approved_name.rpartition(".")[2] in ["txt", "json", "png"]:
       new_filename_ending = input("Unsupported file format. Type either \"txt\", \"json\", or \"png\": ")
@@ -101,7 +109,15 @@ def write_file(path_and_filename, python_object):
     print("Something went wrong. Check path, filename and object.")
 
 
-def read_file(path_and_filename, object_type):
+def read_file(path_and_filename, object_type, conf=None):
+  if conf==None:
+    shared_folder = input("Type shared folder name or press Enter to skip: ")
+    if shared_folder != "":
+      conf = configure_session_and_url(shared_folder)
+    else:
+      conf = configure_session_and_url()
+  s = conf[0]
+  sddk_url = conf[1]
   response = s.get(sddk_url + path_and_filename)
   if response.ok:
     try: 

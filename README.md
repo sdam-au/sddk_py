@@ -6,9 +6,16 @@ sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-inf
 
 The main functionality of the package is in uploading any Python object (dict, list, dataframe) as a text or json file to a preselected shared folder and getting it back into a Python environemnt as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
 
+### Dependencies
+
+* requests
+* pandas
+* matplotlib
+* getpass
+
 ### Install and import
 
-To install and import the package within your Python environment (i.e. jupyter notebook) run:
+To install and import the package within your Python environment (i.e. a jupyter notebook) run:
 
 ```
 !pip install sddk ### to be updated, use flag --ignore-installed
@@ -31,7 +38,7 @@ In the case you want to access a shared folder, you further need:
 
 To configure a personal session, run:
 ```python
-s, sddk_url = sddk.configure_session_and_url()
+conf = configure_session_and_url()
 ```
 
 
@@ -40,18 +47,19 @@ s, sddk_url = sddk.configure_session_and_url()
 To configure a session pointing to a shared folder, run:
 
 ```python
-s, sddk_url = sddk.configure_session_and_url("our_shared_folder", "owner_username@au.dk")
+conf = configure_session_and_url("our_shared_folder", "owner_username@au.dk")
 ```
-Running this function, you configurate two key variables:
+Running this function, you configura a tuple varible `conf`, containing two objects:
 * `s`: a request session authorized by your username and password
-* `sddk_url`: default url address (endpoint) for your request 
-Below you can inspect how these two are used in typical request commands
+* `sddk_url`: default url address (endpoint) for your requests
+
+`conf` is later on used as an input for `write_file()` and `read_file()`.
 
 ### write_file()
 
-The most important components of the package are two continuously developed functions: `write_file(path_and_filename, python_object)` and `read_file(path_and_filename, type_of_object)`. 
+The most important components of the package are two continuously developed functions: `write_file(path_and_filename, python_object, conf)` and `read_file(path_and_filename, type_of_object, conf)`. 
 
-So far the function has been used with several different types of Python objects: `str`, `list`, `dictionary`, Pandas' `dataframe` and Matplotlib's `figure`. These can been written either as `.txt`, `.json` or `.png` files, based simply upon the filename's ending chosen by the user. Here are simple instances of these python objects to play with:
+So far these functions can be used with several different types of Python objects: `str`, `list`, `dictionary`, pandas' `dataframe` and matplotlib's `figure`. These can be written either as `.txt`, `.json` or `.png` files, based simply upon the filename's ending chosen by the user. Here are simple instances of these python objects to play with:
 
 ```python
 ### Python "str" object
@@ -72,7 +80,7 @@ plt.plot(range(10)) # fill it by plotted values
 The simplest example is once we want to write a string object into a textfile located at our home folder (Remember, that since the configuration this home folder is contained within the `sddk_url` variable ) 
 
 ```python
-write_file("test_string.txt", string_object)
+write_file("test_string.txt", string_object, conf)
 ```
 
 In the case  that everything is fine, you will receive following message:
@@ -81,7 +89,7 @@ In the case  that everything is fine, you will receive following message:
 > Your <class 'str'> object has been succefully written as "https://sciencedata.dk/files/test_string.txt"
 ```
 
-However, there is a couple of things which might go wrong. You can choose an unsupported python object, a non-existent path or unsupported file format. The function captures some of these cases. For instance, once you run `write_file("nonexistent_folder/filename.wtf", string_object)`, you will be interactively asked for corrections. First: the function checks whether the path is correct. When corrected to an existent folder (here it is "personal_folder"), the function further inspect whether it has known ending (i.e. `txt`, `json` or `png`). If not, it asks you interactively for correction. Third, it checks whether the folder already contain a file of the same name (to avoid unintended overwritting), and if yes, asks you what to do. Finally, it prints out where you can find your file and what type of object it encapsulates. 
+However, there is a couple of things which might go wrong. You can choose an unsupported python object, a non-existent path or unsupported file format. The function captures some of these cases. For instance, once you run `write_file("nonexistent_folder/filename.wtf", string_object, conf)`, you will be interactively asked for corrections. First: the function checks whether the path is correct. When corrected to an existent folder (here it is "personal_folder"), the function further inspect whether it has known ending (i.e. `txt`, `json` or `png`). If not, it asks you interactively for correction. Third, it checks whether the folder already contain a file of the same name (to avoid unintended overwritting), and if yes, asks you what to do. Finally, it prints out where you can find your file and what type of object it encapsulates. 
 
 ```
 >>> The path is not valid. Try different path and filename: personal_folder/textfile.wtf
@@ -98,25 +106,25 @@ The same function works with dictionaries, lists, Matplotlib's figures and espec
 On the other side, we have the function `read_file(path_and_filename, object_type)`, which enables us to to read our files back to python as chosen python objects. Currently, the function can read only textfiles as strings, and json files as either dictionary, lists or Pandas's dataframes. You have to specify the type of object as the second argument, the values are either "str", "list", "dict" or "df" within quotation marks, like in these examples:
 
 ```python
-string_object = read_file("test_string.txt", "str")
+string_object = read_file("test_string.txt", "str", conf)
 string_object
 >>> 'string content'
 ```
 
 ```python
-list_object = read_file("simple_list.json", "list")
+list_object = read_file("simple_list.json", "list", conf)
 list_object
 >>> ['a', 'b', 'c', 'd']
 ```
 
 ```python
-dict_object = read_file("simple_dict.json", "list")
+dict_object = read_file("simple_dict.json", "list", conf)
 dict_object
 >>> {'a': 1, 'b': 2, 'c': 3}
 ```
 
 ```python
-dataframe_object = read_file("simple_df.json", "df")
+dataframe_object = read_file("simple_df.json", "df", conf)
 >>>     a   b   c
 0  a1  b1  c1
 1  a2  b2  c2
@@ -126,13 +134,15 @@ dataframe_object = read_file("simple_df.json", "df")
 
 ### PUT and GET requests in detail
 
- In the core of  the`write_file()`function is the PUT request command. Here is how what it basically does in the case of different types of objects:
+In the core of  the`write_file()`function is the PUT request command. Here is  what it basically does in the case of different types of objects:
 
 ##### String to TXT
 
 Upload (export) simple text file:
 
 ```python
+s = conf[0]
+sddk_url = conf[1]
 s.put(sddk_url + "testfile.txt", data="textfile content")
 ```
 
@@ -196,28 +206,23 @@ s.put(sddk_url + "temp.png", data = open("temp.png", 'rb'))
 ### Next steps
 - to make the functions more robust.
 
-```python
-def read_file(file_name_and_loc, type_of_python_object):
-  if s.get(sciencedata_groupurl + file_name_and_loc).ok:
-    print("file exists")
-    try: 
-      return json.loads(s.get(sciencedata_groupurl + file_name_and_loc).content) ### if there already is a file with the same name
-    except:
-      print("file import failed")
-  else:
-    print("file does not found; check file name and path.")
-```
-
-
 The package is built following [this](https://packaging.python.org/tutorials/packaging-projects/) tutorial.
 
-### Versions history
+### Credit
 
-* 0.0.6 - first functional configuration
-* 0.0.7 - configuration of individual session by default
-* 0.0.8 - shared folders reading&writing for ordinary users finally functional
-* 0.1.1 - added shared folder owner argument to the main configuration function; migration from test.pypi to real pypi
-* 0.1.2 - added redirection
-* 1.0 - added functions `write_file()` and `read_file()`
+The package is continuously develepod and maintained by [Vojtěch Kaše](http://vojtechkase.cz) as a part of the digital collaborative research workflow of the [SDAM project](https://sdam-au.github.io/sdam-au/) at Aarhus University, Denmark. To cite this package, use:
+
+### Version history
+
+* 1.3 - `conf` corrected
+* 1.2 - `conf` variable added
 * 1.1 - a simple correction
+* 1.0 -  functions `write_file()` and `read_file()` added
+* 0.1.2 -  redirection added
+* 0.1.1 - added shared folder owner argument to the main configuration function; migration from test.pypi to real pypi
+* 0.0.8 - shared folders reading&writing for ordinary users finally functional
+* 0.0.7 - configuration of individual session by default
+* 0.0.6 - first functional configuration
+
+
 
