@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sddk
-Version: 1.3.1
+Version: 1.7
 Summary: A package to access sciencedata.dk
 Home-page: https://github.com/sdam-au/sddk
 Author: Vojtech Kase
@@ -8,7 +8,7 @@ Author-email: vojtech.kase@gmail.com
 License: UNKNOWN
 Description: # sddk
         
-        This is a simple Python package to write files to- and read files from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with shared folders. It relies mainly upon Python requests library.
+        This is a simple Python package to writting and reading files to/from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with shared folders. It relies mainly upon Python requests library.
         
         sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). One of the strength of sciencedata.dk is that it currently supports institutional login from 2976 research and educational institutions around the globe (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
         
@@ -20,6 +20,7 @@ Description: # sddk
         * pandas
         * matplotlib
         * getpass
+        * json
         
         ### Install and import
         
@@ -222,6 +223,11 @@ Description: # sddk
         
         ### Version history
         
+        * 1.7 - figures
+        * 1.6.1 - bug
+        * 1.6 - enables writing dataframes as `csv`
+        * 1.5 - reads individually shared files without necessary configuration
+        * 1.4 - `json` package dependency
         * 1.3 - `conf` corrected
         * 1.2 - `conf` variable added
         * 1.1 - a simple correction

@@ -1,7 +1,10 @@
 import requests
+import json
 import pandas as pd
 import getpass
 import matplotlib.pyplot as plt
+import sys
+from io import StringIO
 
 def configure_session_and_url(shared_folder_name=None, owner=None): ### insert group folder name or leave empty for personal root
   '''
@@ -44,20 +47,24 @@ def configure_session_and_url(shared_folder_name=None, owner=None): ### insert g
   print("endpoint variable has been configured to: " + root_folder_url)
   return (s, root_folder_url)
 
-def make_data_from_object(python_object):
+def make_data_from_object(python_object, file_ending):
   '''
   process the object you want to write
   '''
   if isinstance(python_object, str):
     return (type(python_object), python_object)
-  if isinstance(python_object, pd.core.frame.DataFrame): ### if it is pandas dataframe
-    return (type(python_object), python_object.to_json())
+  if isinstance(python_object, pd.core.frame.DataFrame):  ### if it is pandas dataframe
+    if file_ending == "json":
+      return (type(python_object), python_object.to_json())
+    if file_ending == "csv":
+      python_object.to_csv("temp.csv")
+      return (type(python_object), open("temp.csv", 'rb'))
   if isinstance(python_object, dict):
     return (type(python_object), json.dumps(python_object))
   if isinstance(python_object, list):
     return (type(python_object), json.dumps(python_object))
   if isinstance(python_object, plt.Figure):
-    python_object.savefig('temp.png', dpi=fig.dpi)
+    python_object.savefig('temp.png', dpi=python_object.dpi)
     return (type(python_object), open("temp.png", 'rb'))
   else:
     print("The function does not support " + str(type(python_object)) + " type of objects. Change the format of your data.")
@@ -95,12 +102,13 @@ def write_file(path_and_filename, python_object, conf=None):
       conf = configure_session_and_url()
   s = conf[0]
   sddk_url = conf[1]
-  data_processed = make_data_from_object(python_object)
   path_and_filename = check_path(path_and_filename, conf)
   approved_name = check_filename(path_and_filename, conf)
+  file_ending = approved_name.rpartition(".")[2]
+  data_processed = make_data_from_object(python_object, file_ending)
   try:
-    if not approved_name.rpartition(".")[2] in ["txt", "json", "png"]:
-      new_filename_ending = input("Unsupported file format. Type either \"txt\", \"json\", or \"png\": ")
+    if not approved_name.rpartition(".")[2] in ["txt", "json", "csv", "png"]:
+      new_filename_ending = input("Unsupported file format. Type either \"txt\", \"csv\", \"json\", or \"png\": ")
       approved_name = approved_name.rpartition(".")[0] + "." + new_filename_ending
       approved_name = check_filename(approved_name) ### check whether the file exists for the second time (the ending changed)
     s.put(sddk_url + approved_name, data=data_processed[1])
@@ -111,11 +119,14 @@ def write_file(path_and_filename, python_object, conf=None):
 
 def read_file(path_and_filename, object_type, conf=None):
   if conf==None:
-    shared_folder = input("Type shared folder name or press Enter to skip: ")
-    if shared_folder != "":
-      conf = configure_session_and_url(shared_folder)
+    if "shared/" in path_and_filename:
+      conf = (requests.Session(), "")
     else:
-      conf = configure_session_and_url()
+      shared_folder = input("Type shared folder name or press Enter to skip: ")
+      if shared_folder != "":
+        conf = configure_session_and_url(shared_folder)
+      else:
+        conf = configure_session_and_url()
   s = conf[0]
   sddk_url = conf[1]
   response = s.get(sddk_url + path_and_filename)
@@ -124,7 +135,10 @@ def read_file(path_and_filename, object_type, conf=None):
       if object_type == "str":
         object_to_return = response.text
       if object_type == "df":
-        object_to_return = pd.DataFrame(response.json())
+        if ".csv" in path_and_filename:
+          object_to_return = pd.read_csv(StringIO(response.text))
+        else:
+          object_to_return = pd.DataFrame(response.json())
       if object_type == "dict":
         object_to_return = json.loads(response.content)
       if object_type == "list":
