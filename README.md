@@ -1,26 +1,26 @@
 # sddk
 
-This is a simple Python package to writting and reading files to/from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with shared folders. It relies mainly upon Python requests library.
+This is a Python package for writting and reading files to/from [sciencedata.dk](https://sciencedata.dk/). It is especially designed for working with shared folders. It relies mainly upon Python requests library.
 
-sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). One of the strength of sciencedata.dk is that it currently supports institutional login from 2976 research and educational institutions around the globe (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
+sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol. One of the strength of sciencedata.dk is that it currently supports institutional login from 2976 research and educational institutions around the globe (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
 
-The main functionality of the package is in uploading any Python object (dict, list, dataframe) as a text or json file to a preselected shared folder and getting it back into a Python environemnt as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
+The main functionality of the package is in uploading any Python object (str, dict, list, dataframe or figure) as a file to a preselected shared folder and getting it back into a Python environemnt as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
 
-### Dependencies
+### Requirements
 
 * requests
 * pandas
 * matplotlib
 * getpass
-* json
+* BeautifulSoup
 
 ### Install and import
 
 To install and import the package within your Python environment (i.e. a jupyter notebook) run:
 
-```
-!pip install sddk ### to be updated, use flag --ignore-installed
-from sddk import * ### import all functions
+```python
+!pip install sddk # to be updated, use flag "--ignore-installed"
+import sddk ### import all functions
 ```
 
 ###  Session configuration
@@ -39,18 +39,17 @@ In the case you want to access a shared folder, you further need:
 
 To configure a personal session, run:
 ```python
-conf = configure_session_and_url()
+conf = sddk.configure()
 ```
-
 
 ### Configuration of a session with shared folder
 
 To configure a session pointing to a shared folder, run:
 
 ```python
-conf = configure_session_and_url("our_shared_folder", "owner_username@au.dk")
+conf = sddk.configure("our_shared_folder", "owner_username@au.dk")
 ```
-Running this function, you configura a tuple varible `conf`, containing two objects:
+Running this function, you configure a tuple varible `conf`, containing two objects:
 * `s`: a request session authorized by your username and password
 * `sddk_url`: default url address (endpoint) for your requests
 
@@ -81,7 +80,7 @@ plt.plot(range(10)) # fill it by plotted values
 The simplest example is once we want to write a string object into a textfile located at our home folder (Remember, that since the configuration this home folder is contained within the `sddk_url` variable ) 
 
 ```python
-write_file("test_string.txt", string_object, conf)
+sddk.write_file("test_string.txt", string_object, conf)
 ```
 
 In the case  that everything is fine, you will receive following message:
@@ -90,7 +89,7 @@ In the case  that everything is fine, you will receive following message:
 > Your <class 'str'> object has been succefully written as "https://sciencedata.dk/files/test_string.txt"
 ```
 
-However, there is a couple of things which might go wrong. You can choose an unsupported python object, a non-existent path or unsupported file format. The function captures some of these cases. For instance, once you run `write_file("nonexistent_folder/filename.wtf", string_object, conf)`, you will be interactively asked for corrections. First: the function checks whether the path is correct. When corrected to an existent folder (here it is "personal_folder"), the function further inspect whether it has known ending (i.e. `txt`, `json` or `png`). If not, it asks you interactively for correction. Third, it checks whether the folder already contain a file of the same name (to avoid unintended overwritting), and if yes, asks you what to do. Finally, it prints out where you can find your file and what type of object it encapsulates. 
+However, there is a couple of things which might go wrong. You can choose an unsupported python object, a non-existent path or unsupported file format. The function captures some of these cases. For instance, once you run `sddk.write_file("nonexistent_folder/filename.wtf", string_object, conf)`, you will be interactively asked for corrections. First: the function checks whether the path is correct. When corrected to an existent folder (here it is "personal_folder"), the function further inspect whether it has known ending (i.e. `txt`, `json` or `png`). If not, it asks you interactively for correction. Third, it checks whether the folder already contain a file of the same name (to avoid unintended overwritting), and if yes, asks you what to do. Finally, it prints out where you can find your file and what type of object it encapsulates. 
 
 ```
 >>> The path is not valid. Try different path and filename: personal_folder/textfile.wtf
@@ -104,7 +103,7 @@ The same function works with dictionaries, lists, Matplotlib's figures and espec
 
 ### read_file()
 
-On the other side, we have the function `read_file(path_and_filename, object_type)`, which enables us to to read our files back to python as chosen python objects. Currently, the function can read only textfiles as strings, and json files as either dictionary, lists or Pandas's dataframes. You have to specify the type of object as the second argument, the values are either "str", "list", "dict" or "df" within quotation marks, like in these examples:
+On the other side, we have the function `sddk.read_file(path_and_filename, object_type)`, which enables us to to read our files back to python as chosen python objects. Currently, the function can read only textfiles as strings, and json files as either dictionary, lists or Pandas's dataframes. You have to specify the type of object as the second argument, the values are either "str", "list", "dict" or "df" within quotation marks, like in these examples:
 
 ```python
 string_object = read_file("test_string.txt", "str", conf)
@@ -130,6 +129,59 @@ dataframe_object = read_file("simple_df.json", "df", conf)
 0  a1  b1  c1
 1  a2  b2  c2
 ```
+
+### list_filenames()
+
+This function enables you to list all files within a directory. You can specify the directory, type of the file you are interested in and the conf variable. For instance, the function belows returns all JSON files within your main directory.
+
+```python
+ sddk.list_filenames(filetype="json", conf=conf)
+```
+
+### Personal, shared and public folders
+
+**Shared in and out**
+
+One of the main strength of the sciencedata.dk are collaborative features, namely the way you can manage its **shared** and **public** folders.
+
+**Shared** folders always have one of two forms: either (1) a shared folder *you* share with some users or (2) a shared folder someone else shares with you. 
+
+Each shared folder has its **owner**. The folders  are located in their owner's  personal space and can be easily accessed by them from there like any other personal folder.
+
+However, in the case of shared folders you do not own (i.e. which were shared with you by someone else) you also need to know the username of their owner. 
+
+One of the key features of the **sddk** package is that it enables you to access both types of shared folders **using exactly the same command**, regardless you are their owner or not. This enables that all members of a team accessing a folder owned and shared by one member can you use the same code. The function just checks both options and chooses what works.
+
+For instance, a project member with username `member1@inst.org` created a folder in his personal space called `team_folder`,  uploaded there a file called `textfile.txt`, and shared the folder with his teammates with usernames `member2@inst.org` and `member3@inst.org`. All of them can now access the file using the same series of commands:
+
+```python
+# configure session with access to the shared folder:
+conf = sddk.configure("team_folder", "member1@inst.org")
+# read the file located in this shared folder:
+sddk.read_file("testfile.txt", "str", conf)
+```
+
+**Public files and folders**
+
+Sciencedata.dk also enables to produce public files and folders. These files and folders might be accessed using `sddk.read_file()` function even without having sciencedata.dk account. You just have to know  share link code of the file or folder. To read a public file, you can use:
+
+```python
+public_file_code = "3e0a55a4182de313e04523360cecd015"
+gospels_cleaned = sddk.read_file("https://sciencedata.dk/public/" + public_file_code, "dict")
+```
+
+To read a specific file within a public folder, you can use:
+
+```python
+public_folder_code = "31b393e2afe1ee96ce81869c7efe18cb"
+c_aristotelicum = sddk.read_file("https://sciencedata.dk/public/" + public_folder_code + "/c_aristotelicum.json", "df")
+```
+
+
+
+
+
+
 
 
 
@@ -205,7 +257,11 @@ s.put(sddk_url + "temp.png", data = open("temp.png", 'rb'))
 ```
 
 ### Next steps
-- to make the functions more robust.
+- check string writing and reading
+- enabling blind reading of files 
+- Impement `list_files_in_dir(dirpath, conf)` function (see `sdam-au/OCR/scripts/read_ocr_jsons.ipynb`).
+
+
 
 The package is built following [this](https://packaging.python.org/tutorials/packaging-projects/) tutorial.
 
@@ -215,6 +271,7 @@ The package is continuously develepod and maintained by [Vojtěch Kaše](http://
 
 ### Version history
 
+* 1.8 - `list_filenames()` function and `configure()` alias added
 * 1.7 - figures
 * 1.6.1 - bug
 * 1.6 - enables writing dataframes as `csv`

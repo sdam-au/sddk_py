@@ -5,6 +5,11 @@ import getpass
 import matplotlib.pyplot as plt
 import sys
 from io import StringIO
+from bs4 import BeautifulSoup
+
+
+def test_package():
+  print("we are here!")
 
 def configure_session_and_url(shared_folder_name=None, owner=None): ### insert group folder name or leave empty for personal root
   '''
@@ -47,12 +52,14 @@ def configure_session_and_url(shared_folder_name=None, owner=None): ### insert g
   print("endpoint variable has been configured to: " + root_folder_url)
   return (s, root_folder_url)
 
+configure =  configure_session_and_url
+
 def make_data_from_object(python_object, file_ending):
   '''
   process the object you want to write
   '''
   if isinstance(python_object, str):
-    return (type(python_object), python_object)
+    return (type(python_object), python_object.encode('utf-8'))
   if isinstance(python_object, pd.core.frame.DataFrame):  ### if it is pandas dataframe
     if file_ending == "json":
       return (type(python_object), python_object.to_json())
@@ -92,7 +99,7 @@ def check_filename(path_and_filename, conf):
 
 def write_file(path_and_filename, python_object, conf=None):
   '''
-  write the file to the specified location
+  write file to specified location
   '''
   if conf==None:
     shared_folder = input("Type shared folder name or press Enter to skip: ")
@@ -120,6 +127,7 @@ def write_file(path_and_filename, python_object, conf=None):
 def read_file(path_and_filename, object_type, conf=None):
   if conf==None:
     if "shared/" in path_and_filename:
+      print("this is a publicly shared file")
       conf = (requests.Session(), "")
     else:
       shared_folder = input("Type shared folder name or press Enter to skip: ")
@@ -148,3 +156,17 @@ def read_file(path_and_filename, object_type, conf=None):
       print("file import failed")
   else:
     print("file has not been found; check filename and path.")
+
+def list_filenames(directory="", filetype="", conf=None):
+  if conf==None:
+    conf = configure_session_and_url()
+  resp = conf[0].get(conf[1] + directory)
+  soup = BeautifulSoup(resp.content, "html.parser")
+  if "." not in filetype:
+    filetype = "." + filetype
+  filenames = []
+  for a in soup.find_all("a"):
+      a_str = str(a.get_text())
+      if filetype in a_str:
+          filenames.append(a_str)
+  return filenames
