@@ -137,13 +137,17 @@ def write_file(path_and_filename, python_object, conf=None):
     print("Something went wrong. Check path, filename and object.")
 
 
-def read_file(path_and_filename, object_type, conf=None):
-  if conf==None:
-    if "public/" in path_and_filename:
-      print("this is a publicly shared file")
-      conf = (requests.Session(), "")
-    else:
-      conf = configure_session_and_url()
+def read_file(path_and_filename, object_type, conf=None, public_folder=None):
+  if isinstance(conf, str):
+      print("this file is located in a public folder")
+      conf = (requests.Session(), "https://sciencedata.dk/public/" + conf + "/")
+  else:
+    if conf==None:
+      if "public/" in path_and_filename:
+        print("this is a publicly shared file")
+        conf = (requests.Session(), "")
+      else:
+        conf = configure_session_and_url()
   s = conf[0]
   sddk_url = conf[1]
   if "https" in path_and_filename:
