@@ -6,7 +6,7 @@ sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-inf
 
 The main functionality of the package is in uploading any Python object (str, dict, list, dataframe or figure) as a file to a preselected personal or shared folder and getting it back into Python as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
 
-### Requirements
+## Requirements
 
 * requests
 * pandas
@@ -15,7 +15,7 @@ The main functionality of the package is in uploading any Python object (str, di
 * BeautifulSoup
 * pyarrow >= 17.0
 
-### Install and import
+## Install and import
 
 To install and import the package within your Python environment (i.e. a jupyter notebook) run:
 
@@ -24,7 +24,7 @@ To install and import the package within your Python environment (i.e. a jupyter
 import sddk ### import all functions
 ```
 
-###  Session configuration
+## Session configuration
 
 To run the main configuration function below, you have to know the following:
 * your sciencedata.dk username (e.g. "123456@au.dk" or "kase@zcu.cz"),
@@ -43,7 +43,7 @@ To configure a personal session, run:
 conf = sddk.configure()
 ```
 
-### Configuration with root in shared folder
+## Configuration with root in shared folder
 
 To configure a session pointing to a shared folder, run:
 
@@ -56,7 +56,7 @@ Running this function, you configure a tuple varible `conf`, containing two obje
 
 `conf` is later on used as input for `write_file()` and `read_file()`.
 
-### write_file()
+## write_file()
 
 The most important components of the package are two functions: `write_file(path_and_filename, python_object, conf)` and `read_file(path_and_filename, type_of_object, conf)`. 
 
@@ -102,7 +102,7 @@ Press Enter to overwrite it or choose different path and filename: textfile2.txt
 
 The same function works with dictionaries, lists, Matplotlib's figures and especially Pandas' dataframes. Pandas' dataframe is my favorite. I send there and back 1GB+ dataframes as json or feather files on a daily basis. See examples below
 
-### read_file()
+## read_file()
 
 On the other side, we have the function `sddk.read_file(path_and_filename, object_type)`, which enables us to to read our files back to python as chosen python objects. Currently, the function can read only textfiles as strings, and json files as either dictionary, lists or Pandas's dataframes. You have to specify the type of object as the second argument, the values are either "str", "list", "dict" or "df" within quotation marks, like in these examples:
 
@@ -142,8 +142,6 @@ dataframe_object = pd.DataFrame([("a1", "b1", "c1"), ("a2", "b2", "c2")], column
 dataframe_object
 ```
 
-</style>
-
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -169,7 +167,7 @@ dataframe_object
   </tbody>
 </table>
 
-</div>
+
 
 
 ```python
@@ -181,7 +179,7 @@ sddk.write_file("simple_dataframe.json", dataframe_object, conf)
 sddk.read_file("simple_dataframe.json", "df", conf)
 ```
 
-</style>
+
 
 <table border="1" class="dataframe">
   <thead>
@@ -208,8 +206,6 @@ sddk.read_file("simple_dataframe.json", "df", conf)
   </tbody>
 </table>
 
-</div>
-
 Reading a larger file from a public folder
 
 
@@ -220,7 +216,7 @@ EDH_sample.head(5)
 # this is an example usage of public folder, see below for explanation.
 ```
 
-</style>
+
 
 <table border="1" class="dataframe">
   <thead>
@@ -374,7 +370,7 @@ EDH_sample.head(5)
 </table>
 <p>5 rows × 40 columns</p>
 
-</div>
+
 
 ### pandas.DataFrame to `.feather` and back
 
@@ -388,7 +384,7 @@ sddk.write_file("simple_dataframe.feather", dataframe_object, conf)
 sddk.read_file("simple_dataframe.feather", "df", conf)
 ```
 
-</style>
+
 
 <table border="1" class="dataframe">
   <thead>
@@ -415,7 +411,7 @@ sddk.read_file("simple_dataframe.feather", "df", conf)
   </tbody>
 </table>
 
-</div>
+
 
 Reading a larger file from public folder
 
@@ -426,7 +422,7 @@ EDH_sample = sddk.read_file("EDH_sample.feather", "df", "8fe7d59de1eafe5f8eaebc0
 EDH_sample.head(5)
 ```
 
-</style>
+
 
 <table border="1" class="dataframe">
   <thead>
@@ -580,7 +576,7 @@ EDH_sample.head(5)
 </table>
 <p>5 rows × 40 columns</p>
 
-</div>
+
 
 
 ```python
@@ -597,7 +593,7 @@ dataframe_object = pd.DataFrame([("a1", "b1", "c1"), ("a2", "b2", "c2")], column
 dataframe_object
 ```
 
-</style>
+
 
 <table border="1" class="dataframe">
   <thead>
@@ -623,8 +619,6 @@ dataframe_object
     </tr>
   </tbody>
 </table>
-
-</div>
 
 
 
@@ -638,7 +632,7 @@ sddk.write_file("simple_dataframe.csv", dataframe_object, conf)
 sddk.read_file("simple_dataframe.csv", "df", conf)
 ```
 
-</style>
+
 
 <table border="1" class="dataframe">
   <thead>
@@ -665,9 +659,7 @@ sddk.read_file("simple_dataframe.csv", "df", conf)
   </tbody>
 </table>
 
-</div>
-
-### list_filenames()
+## list_filenames()
 
 This function enables you to list all files within a directory. You can specify the directory, type of the file you are interested in and the conf variable. For instance, the function belows returns all JSON files within your main directory.
 
@@ -675,7 +667,7 @@ This function enables you to list all files within a directory. You can specify 
  sddk.list_filenames(filetype="json", conf=conf)
 ```
 
-### Personal, shared and public folders
+## Personal, shared and public folders
 
 **Shared in and out**
 
@@ -713,14 +705,13 @@ To read a specific file within a public folder, you can use the code below, i.e.
 c_aristotelicum = sddk.read_file("https://sciencedata.dk/public/" + public_folder_code + "/c_aristotelicum.json", "df", "31b393e2afe1ee96ce81869c7efe18cb")
 ```
 
-
-
-### Credit
+## Credit
 
 The package is continuously develepod and maintained by [Vojtěch Kaše](http://vojtechkase.cz) as a part of the digital collaborative research workflow of the [SDAM project](https://sdam-au.github.io/sdam-au/) at Aarhus University, Denmark. To cite this package, use:
 
-### Version history
+## Version history
 
+* 2.1 - README.md update
 * 2.0 - tested with `.txt`, `.json`, `.feather` and `.png`.
 * 1.9 - supports public files and folders; supports `.feather` file format (`utf.8` enforced)
 * 1.8 - `list_filenames()` function and `configure()` alias added
