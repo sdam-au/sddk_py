@@ -1,12 +1,13 @@
 import requests
+import os
 import json
 import pandas as pd
 import getpass
 import matplotlib.pyplot as plt
 import sys
-from io import StringIO
+import io
 from bs4 import BeautifulSoup
-
+import pyarrow.feather as feather
 
 def test_package():
   print("we are here!")
@@ -59,10 +60,18 @@ def make_data_from_object(python_object, file_ending):
   process the object you want to write
   '''
   if isinstance(python_object, str):
-    return (type(python_object), python_object.encode('utf-8'))
-  if isinstance(python_object, pd.core.frame.DataFrame):  ### if it is pandas dataframe
+      return (type(python_object), python_object.encode('utf-8'))
+  if isinstance(python_object, pd.core.frame.DataFrame): ### if it is pandas dataframe
     if file_ending == "json":
       return (type(python_object), python_object.to_json())
+    if file_ending == "feather":
+      for column in python_object.columns: # to avoid problems with encoding, lets check that everything is utf-8
+        try: 
+          python_object[column] = python_object[column].str.encode("utf-8")
+        except: 
+          python_object[column] = python_object[column]  
+      python_object.to_feather("temp.feather")
+      return (type(python_object), open("temp.feather", "rb"))
     if file_ending == "csv":
       python_object.to_csv("temp.csv")
       return (type(python_object), open("temp.csv", 'rb'))
@@ -114,29 +123,35 @@ def write_file(path_and_filename, python_object, conf=None):
   file_ending = approved_name.rpartition(".")[2]
   data_processed = make_data_from_object(python_object, file_ending)
   try:
-    if not approved_name.rpartition(".")[2] in ["txt", "json", "csv", "png"]:
-      new_filename_ending = input("Unsupported file format. Type either \"txt\", \"csv\", \"json\", or \"png\": ")
+    if not approved_name.rpartition(".")[2] in ["txt", "json", "csv", "png", "feather"]:
+      new_filename_ending = input("Unsupported file format. Type either \"txt\", \"csv\", \"json\", \"feather\", or \"png\": ")
       approved_name = approved_name.rpartition(".")[0] + "." + new_filename_ending
       approved_name = check_filename(approved_name) ### check whether the file exists for the second time (the ending changed)
     s.put(sddk_url + approved_name, data=data_processed[1])
+    try:
+      os.remove("temp." + file_ending)
+    except:
+      pass
     print("Your " + str(data_processed[0]) + " object has been succefully written as \"" + sddk_url + approved_name + "\"")
   except:
     print("Something went wrong. Check path, filename and object.")
 
 
-def read_file(path_and_filename, object_type, conf=None):
-  if conf==None:
-    if "shared/" in path_and_filename:
-      print("this is a publicly shared file")
-      conf = (requests.Session(), "")
-    else:
-      shared_folder = input("Type shared folder name or press Enter to skip: ")
-      if shared_folder != "":
-        conf = configure_session_and_url(shared_folder)
+def read_file(path_and_filename, object_type, conf=None, public_folder=None):
+  if isinstance(conf, str):
+      print("this file is located in a public folder")
+      conf = (requests.Session(), "https://sciencedata.dk/public/" + conf + "/")
+  else:
+    if conf==None:
+      if "public/" in path_and_filename:
+        print("this is a publicly shared file")
+        conf = (requests.Session(), "")
       else:
         conf = configure_session_and_url()
   s = conf[0]
   sddk_url = conf[1]
+  if "https" in path_and_filename:
+    sddk_url = ""
   response = s.get(sddk_url + path_and_filename)
   if response.ok:
     try: 
@@ -144,9 +159,16 @@ def read_file(path_and_filename, object_type, conf=None):
         object_to_return = response.text
       if object_type == "df":
         if ".csv" in path_and_filename:
-          object_to_return = pd.read_csv(StringIO(response.text))
-        else:
+          object_to_return = pd.read_csv(io.StringIO(response.text), index_col=0)
+        if ".json" in path_and_filename:
           object_to_return = pd.DataFrame(response.json())
+        if ".feather" in path_and_filename:
+          object_to_return = pd.read_feather(io.BytesIO(response.content))
+          for column in object_to_return.columns:
+            try:
+              object_to_return[column] = object_to_return[column].str.decode("utf-8")
+            except:
+              object_to_return[column] = object_to_return[column]
       if object_type == "dict":
         object_to_return = json.loads(response.content)
       if object_type == "list":

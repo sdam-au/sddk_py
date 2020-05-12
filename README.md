@@ -711,6 +711,7 @@ The package is continuously develepod and maintained by [Vojtěch Kaše](http://
 
 ## Version history
 
+* 2.2 - setup.py update
 * 2.1 - README.md update
 * 2.0 - tested with `.txt`, `.json`, `.feather` and `.png`.
 * 1.9 - supports public files and folders; supports `.feather` file format (`utf.8` enforced)
