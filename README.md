@@ -215,9 +215,9 @@ Reading a larger file from a public folder
 
 ```python
 %%time
-public_folder_code = "8fe7d59de1eafe5f8eaebc0044534606"
-EDH_sample = sddk.read_file("https://sciencedata.dk/public/" + public_folder_code + "/EDH_sample.json", "df")
+EDH_sample = sddk.read_file("EDH_sample.json", "df", "8fe7d59de1eafe5f8eaebc0044534606")
 EDH_sample.head(5)
+# this is an example usage of public folder, see below for explanation.
 ```
 
 </style>
@@ -422,8 +422,7 @@ Reading a larger file from public folder
 
 ```python
 %%time
-public_folder_code = "8fe7d59de1eafe5f8eaebc0044534606"
-EDH_sample = sddk.read_file("https://sciencedata.dk/public/" + public_folder_code + "EDH_sample.feather", "df")
+EDH_sample = sddk.read_file("EDH_sample.feather", "df", "8fe7d59de1eafe5f8eaebc0044534606")
 EDH_sample.head(5)
 ```
 
@@ -708,11 +707,10 @@ public_file_code = "3e0a55a4182de313e04523360cecd015"
 gospels_cleaned = sddk.read_file("https://sciencedata.dk/public/" + public_file_code, "dict")
 ```
 
-To read a specific file within a public folder, you can use:
+To read a specific file within a public folder, you can use the code below, i.e. you can replace the `conf` parameter by sharing code of the public folder.
 
 ```python
-public_folder_code = "31b393e2afe1ee96ce81869c7efe18cb"
-c_aristotelicum = sddk.read_file("https://sciencedata.dk/public/" + public_folder_code + "/c_aristotelicum.json", "df")
+c_aristotelicum = sddk.read_file("https://sciencedata.dk/public/" + public_folder_code + "/c_aristotelicum.json", "df", "31b393e2afe1ee96ce81869c7efe18cb")
 ```
 
 
