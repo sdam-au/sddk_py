@@ -711,6 +711,8 @@ The package is continuously develepod and maintained by [Vojtěch Kaše](http://
 
 ## Version history
 
+* 2.4 - json encoding bug removed
+* 2.3 - json encoding
 * 2.2 - setup.py update
 * 2.1 - README.md update
 * 2.0 - tested with `.txt`, `.json`, `.feather` and `.png`.

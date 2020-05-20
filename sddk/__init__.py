@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 import pyarrow.feather as feather
 
 def test_package():
-  print("we are here!")
+  print("here we are!")
 
 def configure_session_and_url(shared_folder_name=None, owner=None): ### insert group folder name or leave empty for personal root
   '''
@@ -63,7 +63,9 @@ def make_data_from_object(python_object, file_ending):
       return (type(python_object), python_object.encode('utf-8'))
   if isinstance(python_object, pd.core.frame.DataFrame): ### if it is pandas dataframe
     if file_ending == "json":
-      return (type(python_object), python_object.to_json())
+      with open('temp.json', 'w', encoding='utf-8') as file:
+        python_object.to_json(file, force_ascii=False)
+      return (type(python_object), open("temp.json", "rb"))
     if file_ending == "feather":
       for column in python_object.columns: # to avoid problems with encoding, lets check that everything is utf-8
         try: 
