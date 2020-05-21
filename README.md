@@ -374,6 +374,23 @@ EDH_sample.head(5)
 
 ### pandas.DataFrame to `.feather` and back
 
+to work with feather, check that you have correct version of `pyarrow` package:
+
+```python
+import pyarrow
+pyarrow.__version__
+```
+
+You need 0.17.1 or higher.  Google colab comes with 0.14.1 by default, so you have to upgrade:
+
+```python
+!pip install pyarrow --upgrade
+```
+
+and restart your runtime.
+
+Originally,  sddk 1.9-2.4 specified the requirement `pyarrow>=0.17.1` , but it produced a lot of conflicts during an installation on Google colab, since there many other packages requiring pyarrow==0.14.1.
+
 
 ```python
 sddk.write_file("simple_dataframe.feather", dataframe_object, conf)
@@ -711,6 +728,7 @@ The package is continuously develepod and maintained by [Vojtěch Kaše](http://
 
 ## Version history
 
+* 2.5 - pyarrow version changed back to unspecified
 * 2.4 - json encoding bug removed
 * 2.3 - json encoding
 * 2.2 - setup.py update
