@@ -374,7 +374,7 @@ EDH_sample.head(5)
 
 ### pandas.DataFrame to `.feather` and back
 
-to work with feather, check that you have correct version of `pyarrow` package:
+This might cause issues because of the way how pandas implements pyarrow and feather. To work with feather, check that you have installed a correct version of `pyarrow` package:
 
 ```python
 import pyarrow
@@ -389,7 +389,7 @@ You need 0.17.1 or higher.  Google colab comes with 0.14.1 by default, so you ha
 
 and restart your runtime.
 
-Originally,  sddk 1.9-2.4 specified the requirement `pyarrow>=0.17.1` , but it produced a lot of conflicts during an installation on Google colab, since there many other packages requiring pyarrow==0.14.1.
+Originally,  sddk 1.9-2.4 specified the requirement `pyarrow>=0.17.1` , but it produced a lot of conflicts during an installation on Google colab, since there many other packages requiring pyarrow==0.14.1. Therefore, pyarrow is currently bypassed.
 
 
 ```python
@@ -728,6 +728,7 @@ The package is continuously develepod and maintained by [Vojtěch Kaše](http://
 
 ## Version history
 
+* 2.6 - pyarrow avoided
 * 2.5 - pyarrow version changed back to unspecified
 * 2.4 - json encoding bug removed
 * 2.3 - json encoding
