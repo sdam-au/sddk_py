@@ -14,12 +14,12 @@ setuptools.setup(
     url="https://github.com/sdam-au/sddk",
     packages=setuptools.find_packages(),
     install_requires=[
+        "pyarrow",
         "beautifulsoup4",
         "pandas",
         "numpy",
-        "pyarrow",
         "requests",
-        "matplotlib",
+        "matplotlib"
         ],
     classifiers=[
         "Programming Language :: Python :: 3",

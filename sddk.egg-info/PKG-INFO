@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sddk
-Version: 2.6
+Version: 2.7
 Summary: A package to access sciencedata.dk
 Home-page: https://github.com/sdam-au/sddk
 Author: Vojtech Kase
@@ -736,6 +736,7 @@ Description: # sddk
         
         ## Version history
         
+        * 2.7 - resolving issues #1 (reading public json files) & #2 (beautifulsoup import)
         * 2.6 - pyarrow avoided
         * 2.5 - pyarrow version changed back to unspecified
         * 2.4 - json encoding bug removed

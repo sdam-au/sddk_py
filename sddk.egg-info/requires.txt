@@ -1,4 +1,5 @@
 pyarrow
+beautifulsoup4
 pandas
 numpy
 requests
