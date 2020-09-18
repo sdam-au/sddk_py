@@ -728,6 +728,7 @@ The package is continuously develepod and maintained by [Vojtěch Kaše](http://
 
 ## Version history
 
+* 2.7 - resolving issues #1 (reading public json files) & #2 (beautifulsoup import)
 * 2.6 - pyarrow avoided
 * 2.5 - pyarrow version changed back to unspecified
 * 2.4 - json encoding bug removed
