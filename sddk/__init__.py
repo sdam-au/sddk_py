@@ -141,12 +141,12 @@ def write_file(path_and_filename, python_object, conf=None):
 
 def read_file(path_and_filename, object_type, conf=None, public_folder=None):
   if isinstance(conf, str):
-      print("this file is located in a public folder")
+      print("reading file located in a public folder")
       conf = (requests.Session(), "https://sciencedata.dk/public/" + conf + "/")
   else:
     if conf==None:
       if "public/" in path_and_filename:
-        print("this is a publicly shared file")
+        print("reading a publicly shared file")
         conf = (requests.Session(), "")
       else:
         conf = configure_session_and_url()
@@ -162,15 +162,17 @@ def read_file(path_and_filename, object_type, conf=None, public_folder=None):
       if object_type == "df":
         if ".csv" in path_and_filename:
           object_to_return = pd.read_csv(io.StringIO(response.text), index_col=0)
-        if ".json" in path_and_filename:
+        elif ".json" in path_and_filename:
           object_to_return = pd.DataFrame(response.json())
-        if ".feather" in path_and_filename:
+        elif ".feather" in path_and_filename:
           object_to_return = pd.read_feather(io.BytesIO(response.content))
           for column in object_to_return.columns:
             try:
               object_to_return[column] = object_to_return[column].str.decode("utf-8")
             except:
               object_to_return[column] = object_to_return[column]
+        else:
+          object_to_return = pd.DataFrame(response.json())
       if object_type == "dict":
         object_to_return = json.loads(response.content)
       if object_type == "list":
