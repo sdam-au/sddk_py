@@ -14,6 +14,8 @@ The main functionality of the package is in uploading any Python object (str, di
 * getpass
 * BeautifulSoup
 * pyarrow >= 17.0
+* kaleido
+* plotly
 
 ## Install and import
 
@@ -76,6 +78,7 @@ dataframe_object = pd.DataFrame([("a1", "b1", "c1"), ("a2", "b2", "c2")], column
 import matplotlib.pyplot as plt
 figure_object = plt.figure() # generate object
 plt.plot(range(10)) # fill it by plotted values
+### (the same also works for plotly figures)
 ```
 
 The simplest example is once we want to write a string object into a textfile located at our home folder (Remember, that since the configuration this home folder is contained within the `sddk_url` variable ) 
@@ -728,6 +731,7 @@ The package is continuously develepod and maintained by [Vojtěch Kaše](http://
 
 ## Version history
 
+* 2.8 - plotly support
 * 2.7 - resolving issues #1 (reading public json files) & #2 (beautifulsoup import)
 * 2.6 - pyarrow avoided
 * 2.5 - pyarrow version changed back to unspecified

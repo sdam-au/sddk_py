@@ -4,13 +4,16 @@ import json
 import pandas as pd
 import getpass
 import matplotlib.pyplot as plt
+import plotly
+import kaleido
+import plotly.graph_objects as go
 import sys
 import io
 from bs4 import BeautifulSoup
 #import pyarrow.feather as feather
 
 def test_package():
-  print("here we are!")
+  print("here we are right now!")
 
 def configure_session_and_url(shared_folder_name=None, owner=None): ### insert group folder name or leave empty for personal root
   '''
@@ -83,6 +86,9 @@ def make_data_from_object(python_object, file_ending):
     return (type(python_object), json.dumps(python_object))
   if isinstance(python_object, plt.Figure):
     python_object.savefig('temp.png', dpi=python_object.dpi)
+    return (type(python_object), open("temp.png", 'rb'))
+  if isinstance(python_object, plotly.graph_objs._figure.Figure):
+    python_object.write_image("temp.png") 
     return (type(python_object), open("temp.png", 'rb'))
   else:
     print("The function does not support " + str(type(python_object)) + " type of objects. Change the format of your data.")

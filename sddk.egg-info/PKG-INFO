@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sddk
-Version: 2.7
+Version: 2.8
 Summary: A package to access sciencedata.dk
 Home-page: https://github.com/sdam-au/sddk
 Author: Vojtech Kase
@@ -22,6 +22,8 @@ Description: # sddk
         * getpass
         * BeautifulSoup
         * pyarrow >= 17.0
+        * kaleido
+        * plotly
         
         ## Install and import
         
@@ -84,6 +86,7 @@ Description: # sddk
         import matplotlib.pyplot as plt
         figure_object = plt.figure() # generate object
         plt.plot(range(10)) # fill it by plotted values
+        ### (the same also works for plotly figures)
         ```
         
         The simplest example is once we want to write a string object into a textfile located at our home folder (Remember, that since the configuration this home folder is contained within the `sddk_url` variable ) 
@@ -736,6 +739,7 @@ Description: # sddk
         
         ## Version history
         
+        * 2.8 - plotly support
         * 2.7 - resolving issues #1 (reading public json files) & #2 (beautifulsoup import)
         * 2.6 - pyarrow avoided
         * 2.5 - pyarrow version changed back to unspecified

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sddk", # Replace with your own username
-    version="2.7",
+    version="2.8",
     author="Vojtech Kase",
     author_email="vojtech.kase@gmail.com",
     description="A package to access sciencedata.dk",
@@ -19,7 +19,9 @@ setuptools.setup(
         "pandas",
         "numpy",
         "requests",
-        "matplotlib"
+        "matplotlib",
+        "plotly",
+        "kaleido"
         ],
     classifiers=[
         "Programming Language :: Python :: 3",
