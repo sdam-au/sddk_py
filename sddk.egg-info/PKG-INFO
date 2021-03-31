@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sddk
-Version: 2.8
+Version: 2.9.4
 Summary: A package to access sciencedata.dk
 Home-page: https://github.com/sdam-au/sddk
 Author: Vojtech Kase
@@ -13,17 +13,6 @@ Description: # sddk
         sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-infrastrcture cooperation) aimed to offer a robust data storage, data management and data publication solution for researchers in Denmark and abroad (see [docs](https://sciencedata.dk/sites/user/) and [dev](https://sciencedata.dk/sites/developer/) for more info). The storage is accessible either through (1)  the web interface, (2) WebDAV clients or (3) an API relaying on HTTP Protocol. One of the strength of sciencedata.dk is that it currently supports institutional login from 2976 research and educational institutions around the globe (using [WAYF](https://www.wayf.dk/en/about)). That makes it a perfect tool for international research collaboration. 
         
         The main functionality of the package is in uploading any Python object (str, dict, list, dataframe or figure) as a file to a preselected personal or shared folder and getting it back into Python as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
-        
-        ## Requirements
-        
-        * requests
-        * pandas
-        * matplotlib
-        * getpass
-        * BeautifulSoup
-        * pyarrow >= 17.0
-        * kaleido
-        * plotly
         
         ## Install and import
         
@@ -130,7 +119,7 @@ Description: # sddk
         ```
         
         ```python
-        dict_object = read_file("simple_dict.json", "list", conf)
+        dict_object = read_file("simple_dict.json", "dict", conf)
         dict_object
         >>> {'a': 1, 'b': 2, 'c': 3}
         ```
@@ -739,7 +728,8 @@ Description: # sddk
         
         ## Version history
         
-        * 2.8 - plotly support
+        * 2.9 - `.eps` file format for matplotlib figures support (plotly works only with `.png`) 
+        * 2.8.2 - plotly support
         * 2.7 - resolving issues #1 (reading public json files) & #2 (beautifulsoup import)
         * 2.6 - pyarrow avoided
         * 2.5 - pyarrow version changed back to unspecified

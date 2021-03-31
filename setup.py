@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sddk", # Replace with your own username
-    version="2.8",
+    version="2.9.4",
     author="Vojtech Kase",
     author_email="vojtech.kase@gmail.com",
     description="A package to access sciencedata.dk",
@@ -14,14 +14,14 @@ setuptools.setup(
     url="https://github.com/sdam-au/sddk",
     packages=setuptools.find_packages(),
     install_requires=[
-        "pyarrow",
-        "beautifulsoup4",
-        "pandas",
-        "numpy",
-        "requests",
-        "matplotlib",
-        "plotly",
-        "kaleido"
+        "pyarrow>=3",
+        "plotly>=4",
+        "kaleido>=0.2.1",
+        "beautifulsoup4>=4",
+        "pandas>=1",
+        "numpy>=1",
+        "requests>=2",
+        "matplotlib>=3.4"
         ],
     classifiers=[
         "Programming Language :: Python :: 3",

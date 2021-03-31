@@ -6,17 +6,6 @@ sciencedata.dk is a project managed by [DEiC](https://www.deic.dk) (Danish e-inf
 
 The main functionality of the package is in uploading any Python object (str, dict, list, dataframe or figure) as a file to a preselected personal or shared folder and getting it back into Python as the original Python object. It uses sciencedata.dk API in combination with Python requests library.
 
-## Requirements
-
-* requests
-* pandas
-* matplotlib
-* getpass
-* BeautifulSoup
-* pyarrow >= 17.0
-* kaleido
-* plotly
-
 ## Install and import
 
 To install and import the package within your Python environment (i.e. a jupyter notebook) run:
@@ -122,7 +111,7 @@ list_object
 ```
 
 ```python
-dict_object = read_file("simple_dict.json", "list", conf)
+dict_object = read_file("simple_dict.json", "dict", conf)
 dict_object
 >>> {'a': 1, 'b': 2, 'c': 3}
 ```
@@ -731,7 +720,8 @@ The package is continuously develepod and maintained by [Vojtěch Kaše](http://
 
 ## Version history
 
-* 2.8 - plotly support
+* 2.9 - `.eps` file format for matplotlib figures support (plotly works only with `.png`) 
+* 2.8.2 - plotly support
 * 2.7 - resolving issues #1 (reading public json files) & #2 (beautifulsoup import)
 * 2.6 - pyarrow avoided
 * 2.5 - pyarrow version changed back to unspecified
