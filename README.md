@@ -25,13 +25,12 @@ Once installed, import the package in the following way:
 ```python
 import sddk
 ```
-
-## Two forms of authentifications/approach
+## Two forms of authentifications/approach
 
 Since version 3.0, the package supports two different types of authentification, implying two different ways for using the package. 
 
-* using `cloudSession()` class object and the `s` class session object [[documentation](#approach-based-on-cloudSession())]
-* using `configure()` function and the `conf` variable [[documentation](#approach-based-on-configure())]
+* using `cloudSession()` class object and the `s` class session object
+* using `configure()` function and the `conf` variable
 
 Both approaches work with the same two main functions (`write_file()` and `read_file()`), but the approach based on `cloudSession()` is more straightforward and includes some additional functionality (which will be continuously extended).
 
