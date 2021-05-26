@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sddk
-Version: 2.9.4
+Version: 2.10.1
 Summary: A package to access sciencedata.dk
 Home-page: https://github.com/sdam-au/sddk
 Author: Vojtech Kase
@@ -59,7 +59,7 @@ Description: # sddk
         
         The most important components of the package are two functions: `write_file(path_and_filename, python_object, conf)` and `read_file(path_and_filename, type_of_object, conf)`. 
         
-        So far these functions can be used with several different types of Python objects: `str`, `list`, `dictionary`, pandas' `dataframe` and matplotlib's `figure`. These can be written either as `.txt`, `.json` or `.png` files, based simply upon the filename's ending chosen by the user. Here are simple instances of these python objects to play with:
+        So far these functions can be used with several different types of Python objects: `str`, `list`, `dictionary`, pandas' `dataframe`, geopandas `geodataframe` and matplotlib's `figure`. These can be written either as `.txt`, `.json`, `geojson` , `.png` or `.eps` files, based upin type of the input object a d filename's ending chosen by the user. Here are simple instances of these python objects to play with:
         
         ```python
         ### Python "str" object
@@ -104,7 +104,7 @@ Description: # sddk
         
         ## read_file()
         
-        On the other side, we have the function `sddk.read_file(path_and_filename, object_type)`, which enables us to to read our files back to python as chosen python objects. Currently, the function can read only textfiles as strings, and json files as either dictionary, lists or Pandas's dataframes. You have to specify the type of object as the second argument, the values are either "str", "list", "dict" or "df" within quotation marks, like in these examples:
+        On the other side, we have the function `sddk.read_file(path_and_filename, object_type)`, which enables us to to read our files back to python as chosen python objects. Currently, the function can read only textfiles as strings, and json files as either dictionary, lists or Pandas's dataframes. You have to specify the type of object as the second argument, the values are either "str", "list", "dict", "df" or "gdf" within quotation marks, like in these examples:
         
         ```python
         string_object = read_file("test_string.txt", "str", conf)
@@ -719,7 +719,8 @@ Description: # sddk
         To read a specific file within a public folder, you can use the code below, i.e. you can replace the `conf` parameter by sharing code of the public folder.
         
         ```python
-        c_aristotelicum = sddk.read_file("https://sciencedata.dk/public/" + public_folder_code + "/c_aristotelicum.json", "df", "31b393e2afe1ee96ce81869c7efe18cb")
+        public_folder_code = "31b393e2afe1ee96ce81869c7efe18cb"
+        c_aristotelicum = sddk.read_file("c_aristotelicum.json", "df", public_folder_code)
         ```
         
         ## Credit
@@ -728,6 +729,7 @@ Description: # sddk
         
         ## Version history
         
+        * 2.10 - supports `.geojson`
         * 2.9 - `.eps` file format for matplotlib figures support (plotly works only with `.png`) 
         * 2.8.2 - plotly support
         * 2.7 - resolving issues #1 (reading public json files) & #2 (beautifulsoup import)
