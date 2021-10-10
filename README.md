@@ -25,20 +25,7 @@ Once installed, import the package in the following way:
 ```python
 import sddk
 ```
-## Two forms of authentifications/approach
-
-Since version 3.0, the package supports two different types of authentification, implying two different ways for using the package. 
-
-* using `cloudSession()` class object and the `s` class session object
-* using `configure()` function and the `conf` variable
-
-Both approaches work with the same two main functions (`write_file()` and `read_file()`), but the approach based on `cloudSession()` is more straightforward and includes some additional functionality (which will be continuously extended).
-
-Thus, we recommend the solution based on `cloudSession()` , since it allows you to do more stuff with less code. However, to maintain backward compatibility, we still support the older approach based on `configure()` function.
-
-
-
-## Approach based on cloudSession()
+## Authentification
 
 To establish the cloud session, you have to know the following:
 
@@ -747,40 +734,6 @@ To read a specific file within a public folder, you can use the code below, i.e.
 public_folder_code = "31b393e2afe1ee96ce81869c7efe18cb"
 c_aristotelicum = sddk.read_file("c_aristotelicum.json", "df", public_folder_code)
 ```
-
-
-
-## Approach based on configure()
-
-To run the main configuration function below, you have to know the following:
-* your sciencedata.dk username (e.g. "123456@au.dk" or "kase@zcu.cz"),
-* your sciencedata.dk password (has to be previously configured in the sciencedata.dk web interface),
-
-In the case you want to access a shared folder, you further need:
-
-* **name** of the shared folder you want to access (e.g. "our_shared_folder"),
-
-* **username** of the owner of the folder (if it is not yours)
-
-(Do not worry, you will be asked to input these values interactively while running the function)
-
-To configure a personal session, run:
-```python
-conf = sddk.configure()
-```
-
-## Configuration with root in shared folder
-
-To configure a session pointing to a shared folder, run:
-
-```python
-conf = sddk.configure("our_shared_folder", "owner_username@au.dk")
-```
-Running this function, you configure a tuple varible `conf`, containing two objects:
-* `s`: a request session authorized by your username and password
-* `sddk_url`: default url address (endpoint) for your requests
-
-`conf` is later on used as input for `write_file()` and `read_file()`.
 
 ## write_file()
 
