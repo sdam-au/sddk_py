@@ -17,7 +17,7 @@ import sys
 import io
 from bs4 import BeautifulSoup
 #import pyarrow.feather as feather
-
+import subprocess
 
 def test_package():
     print("here we are right now")
@@ -114,7 +114,7 @@ class cloudSession:
             sciencedata_homeurl = "https://"+str(provider)+"/"
             if(provider == "sciencedata"):
                 ### username and password inferred
-                username = subprocess.check_output("printf $HOSTNAME | sed 's|^jupyter-||'", shell=True).decode("UTF-8")
+                username = subprocess.check_output("printf $SD_UID", shell=True).decode("UTF-8")
                 password = ""
             else:
                 ### set username and password
@@ -128,7 +128,7 @@ class cloudSession:
                 root_folder_url = sciencedata_homeurl + group_folder_name +"/"
             r = s.head(root_folder_url, allow_redirects=False)
             if('Location' in r.headers):
-                sciencedata_homeurl = r.headers['Location']
+                root_folder_url = r.headers['Location']
             ### SETTING FOR SHARED FOLDER - if their name is passed in: 
             if shared_folder_name != None:
                 if owner != None and owner == username:
