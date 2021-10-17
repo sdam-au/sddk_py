@@ -110,8 +110,8 @@ class cloudSession:
         '''
         if(provider == None):
             provider = "sciencedata.dk"
-        if(str(provider) == "sciencedata" or str(provider) == "sciencedata.dk"):
-            sciencedata_homeurl = "https://"+str(provider)+"/"
+        if(provider == "sciencedata" or provider == "sciencedata.dk"):
+            sciencedata_homeurl = "https://"+provider+"/"
             if(provider == "sciencedata"):
                 ### username and password inferred
                 username = subprocess.check_output("printf $SD_UID", shell=True).decode("UTF-8")
@@ -126,26 +126,27 @@ class cloudSession:
             root_folder_url = sciencedata_homeurl + "files/"
             if group_folder_name != None:
                 root_folder_url = sciencedata_homeurl + group_folder_name +"/"
-            r = s.head(root_folder_url, allow_redirects=False)
-            if('Location' in r.headers):
-                root_folder_url = r.headers['Location']
+            if(provider != "sciencedata"):
+                r = s.get(root_folder_url, allow_redirects=False)
+                if('Location' in r.headers):
+                    root_folder_url = r.headers['Location']
             ### SETTING FOR SHARED FOLDER - if their name is passed in: 
             if shared_folder_name != None:
                 if owner != None and owner == username:
                     ### if you are owner of the shared folder, access it directly
-                    shared_folder_owner_url = sciencedata_homeurl + 'files/' + shared_folder_name + "/"
+                    shared_folder_url = sciencedata_homeurl + 'files/' + shared_folder_name + "/"
                 else: # otherwise use endpoint for "shared with me"
                     if owner==None:
                         owner = input("\"" + shared_folder_name + "\" owner's username: ") ### in the case Vojtech is folder owner
-                    shared_folder_member_url = sciencedata_homeurl + "sharingin/" + owner + "/" + shared_folder_name + "/" 
+                    shared_folder_url = sciencedata_homeurl + "sharingin/" + owner + "/" + shared_folder_name + "/" 
                     try:
-                        r = s.head(shared_folder_member_url, allow_redirects=False)
+                        r = s.head(shared_folder_url, allow_redirects=False)
                         if('Location' in r.headers):
-                            shared_folder_member_url = r.headers['Location']
+                            shared_folder_url = r.headers['Location']
                     except:
                         pass
-                if s.head(shared_folder_member_url).ok:
-                    root_folder_url = shared_folder_member_url
+                if s.get(shared_folder_url).ok:
+                    root_folder_url = shared_folder_url
                     print("connection with shared folder established with you as its ordinary user")
                 else:
                     print("connection with shared folder failed")
