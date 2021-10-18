@@ -200,13 +200,13 @@ class cloudSession:
                 new_filename_ending = input("Unsupported file format. Type either \"txt\", \"csv\", \"json\", \"geojson\", \"feather\", \"eps\", or \"png\": ")
                 approved_name = approved_name.rpartition(".")[0] + "." + new_filename_ending
                 approved_name = self.check_filename(approved_name) ### check whether the file exists for the second time (the ending changed)
-            s.put(cloud_url + approved_name, data=data_processed[1])
+            r = s.put(cloud_url + approved_name, data=data_processed[1])
             try:
                 os.remove("temp." + file_ending)
             except:
                 pass
-            if s.status_code >= 300:
-                raise HTTPError("File not written. Error: "+s.status_code)
+            if r.status_code >= 300:
+                raise HTTPError("File not written. Error: "+r.status_code)
             print("Your " + str(data_processed[0]) + " object has been succesfully written as \"" + cloud_url + approved_name + "\"")
         except Exception as e:
             print("Something went wrong: "+e)
