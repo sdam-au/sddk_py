@@ -209,7 +209,7 @@ class cloudSession:
                 raise HTTPError("File not written. Error: "+r.status_code)
             print("Your " + str(data_processed[0]) + " object has been succesfully written as \"" + cloud_url + approved_name + "\"")
         except Exception as e:
-            print("Something went wrong: "+e)
+            print("Something went wrong: "+str(e))
 
 
     def read_file(self, path_and_filename, object_type=None, public_folder=None):
