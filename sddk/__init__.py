@@ -138,11 +138,11 @@ class cloudSession:
                 else: # otherwise use endpoint for "shared with me"
                     if owner==None:
                         owner = input("\"" + shared_folder_name + "\" owner's username: ") ### in the case Vojtech is folder owner
-                    shared_folder_url = sciencedata_homeurl + "sharingin/" + owner + "/" + shared_folder_name + "/" 
+                    shared_folder_url = sciencedata_homeurl + "sharingin/" + owner + "/" + shared_folder_name + "/"
                     try:
                         r = s.head(shared_folder_url, allow_redirects=False)
                         if('Location' in r.headers):
-                            shared_folder_url = r.headers['Location']
+                            shared_folder_url = r.headers['Location'] + "/"
                     except:
                         pass
                 if s.get(shared_folder_url).ok:
@@ -205,9 +205,11 @@ class cloudSession:
                 os.remove("temp." + file_ending)
             except:
                 pass
-            print("Your " + str(data_processed[0]) + " object has been succefully written as \"" + cloud_url + approved_name + "\"")
-        except:
-            print("Something went wrong. Check path, filename and object.")
+            if s.status_code >= 300:
+                raise HTTPError("File not written. Error: "+s.status_code)
+            print("Your " + str(data_processed[0]) + " object has been succesfully written as \"" + cloud_url + approved_name + "\"")
+        except Exception as e:
+            print("Something went wrong: "+e)
 
 
     def read_file(self, path_and_filename, object_type=None, public_folder=None):
