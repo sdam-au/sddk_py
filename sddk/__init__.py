@@ -172,7 +172,7 @@ class cloudSession:
         else:
             print("Sorry, it is still not okay.")
 
-    def check_filename(self, path_and_filename): 
+    def check_filename(self, path_and_filename):
         '''
         check whether there  exist a file with the same name
         '''
@@ -182,7 +182,7 @@ class cloudSession:
             if len(approved_name) == 0: 
                 approved_name = path_and_filename
         else:
-            approved_name = path_and_filename           
+            approved_name = path_and_filename
         return approved_name
     
     def write_file(self, path_and_filename, python_object):
