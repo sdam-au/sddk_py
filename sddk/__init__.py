@@ -102,7 +102,7 @@ def check_filename(path_and_filename, conf):
     return approved_name
 
 class cloudSession:
-    def __init__(self, provider=None, shared_folder_name=None, owner=None, group_folder_name=None): ### insert group folder name or leave empty for personal root
+    def __init__(self, provider=None, shared_folder_name=None, owner=None, group_folder_name=None, user_name=None): ### insert group folder name or leave empty for personal root
         '''
         interactively setup your sciencedata.dk homeurl, username and password
         in the case of shared folder, inquire for its owner as well
@@ -113,12 +113,20 @@ class cloudSession:
         if(provider == "sciencedata" or provider == "sciencedata.dk"):
             sciencedata_homeurl = "https://"+provider+"/"
             if(provider == "sciencedata"):
-                ### username and password inferred
-                username = subprocess.check_output("printf $SD_UID", shell=True).decode("UTF-8")
-                password = ""
+                ### If a username is given, ask for a password - providing both will greatly speed up authentication
+                if user_name:
+                    username = user_name
+                    password = getpass.getpass("Your ScienceData password: ")
+                else:
+                    ### username and password inferred
+                    username = subprocess.check_output("printf $SD_UID", shell=True).decode("UTF-8")
+                    password = ""
             else:
                 ### set username and password
-                username = input("Your ScienceData username (e.g. '123456@au.dk'): ")
+                if user_name:
+                    username = user_name
+                else:
+                    username = input("Your ScienceData username (e.g. '123456@au.dk'): ")
                 password = getpass.getpass("Your ScienceData password: ")
             ### establish a request session
             s = requests.Session()
@@ -242,7 +250,10 @@ class cloudSession:
                             except:
                                 object_to_return[column] = object_to_return[column]
                     else:
-                        object_to_return = pd.DataFrame(response.json())
+                        try:
+                            object_to_return = pd.DataFrame(response.json())
+                        except:
+                            object_to_return = response.content
                 if object_type == "gdf":
                     object_to_return = gpd.read_file(io.BytesIO(response.content), driver='GeoJSON')
                 if object_type == "dict":
@@ -250,8 +261,8 @@ class cloudSession:
                 if object_type == "list":
                     object_to_return = json.loads(response.content)
                 return object_to_return
-            except:
-                print("file import failed")
+            except Exception as e:
+                print("file import failed. "+repr(e))
         else:
             print("file has not been found; check filename and path.")
 
