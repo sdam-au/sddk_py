@@ -8,19 +8,14 @@ import json
 import pandas as pd
 import getpass
 import matplotlib.pyplot as plt
-import plotly
-import kaleido
-import geopandas as gpd
-import shapely
-import plotly.graph_objects as go
-import sys
+#import plotly
+#import geopandas as gpd
+#import shapely
 import io
 from bs4 import BeautifulSoup
-#import pyarrow.feather as feather
-
 
 def test_package():
-    print("here we are right now - May 26, 11:10")
+    print("here we are right now - April 27")
 
 ###
 # ORIGINAL VERSION OF THE PACKAGE, USING "conf"
@@ -64,7 +59,7 @@ def configure_session_and_url(shared_folder_name=None, owner=None): ### insert g
                         print("connection with shared folder established with you as its ordinary user")
                     else:
                         print("connection with shared folder failed")
-        break
+            break
     print("endpoint variable has been configured to: " + root_folder_url)
     return (s, root_folder_url)
 
@@ -82,8 +77,13 @@ def make_data_from_object(python_object, file_ending):
                 python_object.to_json(file, force_ascii=False)
             return (type(python_object), open("temp.json", "rb"))
         if file_ending == "geojson":
-            if isinstance(python_object, gpd.geodataframe.GeoDataFrame):
-                return (type(python_object), json.dumps(gdf_to_geojson(python_object)))
+            try:
+                import shapely
+                import geopandas as gpd
+                if isinstance(python_object, gpd.geodataframe.GeoDataFrame):
+                    return (type(python_object), json.dumps(gdf_to_geojson(python_object)))
+            except:
+                print("either geopandas not properly installed or not a valid geodataframe object")
         if file_ending == "json":
             with open('temp.json', 'w', encoding='utf-8') as file:
                 python_object.to_json(file, force_ascii=False)
@@ -111,6 +111,7 @@ def make_data_from_object(python_object, file_ending):
             python_object.savefig('temp.png', dpi=python_object.dpi)
             return (type(python_object), open("temp.png", 'rb'))
     if isinstance(python_object, plotly.graph_objs._figure.Figure):
+        import plotly
         python_object.write_image("temp.png") 
         return (type(python_object), open("temp.png", 'rb'))
     else:
@@ -217,7 +218,11 @@ def read_file(path_and_filename, object_type, conf=None, public_folder=None):
                 else:
                     object_to_return = pd.DataFrame(response.json())
             if object_type == "gdf":
-                object_to_return = gpd.read_file(io.BytesIO(response.content), driver='GeoJSON')
+                try:
+                    import geopandas as gpd
+                    object_to_return = gpd.read_file(io.BytesIO(response.content), driver='GeoJSON')
+                except:
+                    print("Error: either geopandas not properly installed or not a valid geodataframe object")
             if object_type == "dict":
                 object_to_return = json.loads(response.content)
             if object_type == "list":
@@ -283,7 +288,7 @@ class cloudSession:
                                 print("connection with shared folder failed")
                 break
             print("endpoint variable has been configured to: " + root_folder_url)
-        if "owncloud.cesnet.cz" in provider:
+        if "owncloud.cesnet.cz" in str(provider):
             user = input("Insert your Username code (a long string of characters and numbers): ")
             password = getpass.getpass("Insert your Password/Token: ")
             s = requests.Session() # create session
@@ -373,7 +378,11 @@ class cloudSession:
                     else:
                         object_to_return = pd.DataFrame(response.json())
                 if object_type == "gdf":
-                    object_to_return = gpd.read_file(io.BytesIO(response.content), driver='GeoJSON')
+                    try:
+                        import geopandas as gpd
+                        object_to_return = gpd.read_file(io.BytesIO(response.content), driver='GeoJSON')
+                    except:
+                        print("Error: either geopandas not properly installed or not a valid geodataframe object")
                 if object_type == "dict":
                     object_to_return = json.loads(response.content)
                 if object_type == "list":

@@ -1456,6 +1456,7 @@ The package is continuously develepod and maintained by [Vojtěch Kaše](http://
 
 ## Version history
 
+* 3.1 - fixing an issue with nonfunctional "silo1" authentification & minor simplifications
 * 3.0 - new way of authentification, based on `cloudSession()` class object; it also supports `owncloud.cesnet.cz` as service provider
 * 2.10 - supports `.geojson`
 * 2.9 - `.eps` file format for matplotlib figures support (plotly works only with `.png`) 
