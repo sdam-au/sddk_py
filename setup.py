@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sddk", # Replace with your own username
-    version="3.2",
+    version="3.3",
     author="Vojtech Kase",
     author_email="vojtech.kase@gmail.com",
     description="A package to access sciencedata.dk",

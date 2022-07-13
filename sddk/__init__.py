@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import io
 from bs4 import BeautifulSoup
 import subprocess
+import plotly
+import shapely
 
 def test_package():
     print("here we are right now")
