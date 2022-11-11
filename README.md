@@ -1408,7 +1408,9 @@ c_aristotelicum = sddk.read_file("c_aristotelicum.json", "df", public_folder_cod
 The package is continuously develepod and maintained by [Vojtěch Kaše](http://vojtechkase.cz) as a part of the digital collaborative research workflow of the [SDAM project](https://sdam-au.github.io/sdam-au/) at Aarhus University, Denmark. To cite this package, use:
 
 ## Version history
-
+* 3.6 - fixing geojson and relative paths
+* 3.5 - minor bugs
+* 3.4 - fixing issues with feather
 * 3.3 - fixing issues with missing plotly
 * 3.2 - fixing an issue with nonfunctional "silo1" authentification & minor simplifications
 * 3.1 - fixing an issue with nonfunctional "silo1" authentification & minor simplifications

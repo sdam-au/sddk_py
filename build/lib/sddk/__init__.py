@@ -12,9 +12,11 @@ from bs4 import BeautifulSoup
 import subprocess
 import plotly
 import shapely
+import pyarrow
+import geopandas as gpd
 
 def test_package():
-    print("here we are right now")
+    print("here we are right now - working on new version of the package")
 
 def make_data_from_object(python_object, file_ending):
     '''
@@ -22,30 +24,16 @@ def make_data_from_object(python_object, file_ending):
     '''
     if isinstance(python_object, str):
         return (type(python_object), python_object.encode('utf-8'))
-    if isinstance(python_object, pd.core.frame.DataFrame): ### if it is pandas dataframe
+    if (isinstance(python_object, pd.core.frame.DataFrame)) | (isinstance(python_object, gpd.geodataframe.GeoDataFrame)): ### if it is pandas dataframe
         if file_ending == "json":
             with open('temp.json', 'w', encoding='utf-8') as file:
                 python_object.to_json(file, force_ascii=False)
             return (type(python_object), open("temp.json", "rb"))
         if file_ending == "geojson":
-            try:
-                import shapely
-                import geopandas as gpd
-                if isinstance(python_object, gpd.geodataframe.GeoDataFrame):
-                    return (type(python_object), json.dumps(gdf_to_geojson(python_object)))
-            except:
-                print("either geopandas not properly installed or not a valid geodataframe object")
-        if file_ending == "json":
-            with open('temp.json', 'w', encoding='utf-8') as file:
-                python_object.to_json(file, force_ascii=False)
-            return (type(python_object), open("temp.json", "rb"))
+            python_object.to_file("temp.geojson", driver="GeoJSON")
+            return (type(python_object), open("temp.geojson", "rb"))
         if file_ending == "feather":
-            for column in python_object.columns: # to avoid problems with encoding, lets check that everything is utf-8
-                try:
-                    python_object[column] = python_object[column].str.encode("utf-8")
-                except:
-                    python_object[column] = python_object[column]
-            python_object.to_feather("temp.feather")
+            python_object.to_feather("temp.feather", index=False)
             return (type(python_object), open("temp.feather", "rb"))
         if file_ending == "csv":
             python_object.to_csv("temp.csv")
@@ -57,7 +45,7 @@ def make_data_from_object(python_object, file_ending):
     if isinstance(python_object, plt.Figure):
         python_object.savefig('temp.png', dpi=python_object.dpi)
         return (type(python_object), open("temp.png", 'rb'))
-    if isinstance(python_object, plotly.graph_objs._figure.Figure):
+    if isinstance(python_object, plotly.graph_objs.Figure):
         python_object.write_image("temp.png")
         return (type(python_object), open("temp.png", 'rb'))
     else:
@@ -66,11 +54,7 @@ def make_data_from_object(python_object, file_ending):
 def gdf_to_geojson(gdf_input):
     # serialize geometry:
     gdf = gdf_input.copy()
-    gdf["geometry"] = gdf["geometry"].apply(lambda x: eval(json.dumps(shapely.geometry.mapping(x))))
-    # gdf into dict object in geojson structure:
-    for col in gdf.columns:
-        if list in [type(ins) for ins in gdf[col]]:
-            gdf[col] = gdf[col].apply(lambda x: str(x))
+    #gdf["geometry"] = gdf["geometry"].apply(lambda x: eval(json.dumps(shapely.geometry.mapping(x))))
     dict_list_object = [{"type" : "Feature", "geometry" : el["geometry"], "properties": {key:val for key, val in el.items() if key != 'geometry'}} for el in gdf.to_dict("records")]
     geojson_structure = {"type": "FeatureCollection", "features": dict_list_object}
     return geojson_structure
@@ -226,8 +210,8 @@ class cloudSession:
             object_type="df"
         if public_folder != None:
             response = s.get("https://sciencedata.dk/public/" + public_folder + "/" + path_and_filename)
-        elif "public/" in path_and_filename:
-            response = s.get(path_and_filename)
+        #elif "public/" in path_and_filename:
+        #    response = s.get(path_and_filename)
         else:
             response = s.get(cloud_url + path_and_filename)
         if response.ok:
@@ -254,7 +238,12 @@ class cloudSession:
                 if object_type == "gdf":
                     try:
                         import geopandas as gpd
-                        object_to_return = gpd.read_file(io.BytesIO(response.content), driver='GeoJSON')
+                        if "geojson" in path_and_filename.lower():
+                            object_to_return = gpd.read_file(io.BytesIO(response.content), driver='GeoJSON')
+                        elif "feather" in path_and_filename.lower():
+                            object_to_return = gpd.read_feather(io.BytesIO(response.content))
+                        else:
+                            print("Error: either geopandas not properly installed or not a valid geodataframe object")
                     except:
                         print("Error: either geopandas not properly installed or not a valid geodataframe object")
                 if object_type == "dict":
