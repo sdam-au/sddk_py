@@ -1,12 +1,10 @@
 Metadata-Version: 2.1
 Name: sddk
-Version: 3.7
+Version: 3.8
 Summary: A package to access sciencedata.dk
 Home-page: https://github.com/sdam-au/sddk
 Author: Vojtech Kase
 Author-email: vojtech.kase@gmail.com
-License: UNKNOWN
-Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
@@ -1424,6 +1422,7 @@ License-File: LICENCE
  The package is continuously develepod and maintained by [Vojtěch Kaše](http://vojtechkase.cz) as a part of the digital collaborative research workflow of the [SDAM project](https://sdam-au.github.io/sdam-au/) at Aarhus University, Denmark. To cite this package, use:
  
  ## Version history
+ * 3.8 - new function s.list_directories(); support for GeoDataFrames to `.parquet` and back
  * 3.7 - fixing public files + version attribute 
  * 3.6 - fixing geojson and relative paths
  * 3.5 - minor bugs
@@ -1462,5 +1461,3 @@ License-File: LICENCE
  
  
  
-
-
