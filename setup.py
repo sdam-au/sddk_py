@@ -1,11 +1,16 @@
 import setuptools
+import re
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    readme_lines = fh.readlines()
+    long_description = " ".join(readme_lines)
+    print(readme_lines)
+    version_history_start = [l[0] for l in enumerate(readme_lines) if "Version history" in l[1]][0]
+    latest_version = re.search("\d+?\.\d+?", readme_lines[version_history_start+1:][0])[0]
 
 setuptools.setup(
     name="sddk", # Replace with your own username
-    version="3.6",
+    version=latest_version,
     author="Vojtech Kase",
     author_email="vojtech.kase@gmail.com",
     description="A package to access sciencedata.dk",

@@ -118,25 +118,25 @@ The same function works with dictionaries, lists, Matplotlib's figures and espec
 On the other side, we have the function `s.read_file(path_and_filename, object_type)`, which enables us to to read our files back to python as chosen python objects. Currently, the function can read  textfiles as strings, json files as either dictionary, lists or Pandas's dataframes, and geojson files as geopandas GeoDataFrames. You have to specify the type of object as the second argument, the values are either "str", "list", "dict", "df" or "gdf" within quotation marks, like in these examples. If you omit this, the file is parsed as pandas DataFrame.
 
 ```python
-string_object = read_file("test_string.txt", "str")
+string_object = s.read_file("test_string.txt", "str")
 string_object
 >>> 'string content'
 ```
 
 ```python
-list_object = read_file("simple_list.json", "list")
+list_object = s.read_file("simple_list.json", "list")
 list_object
 >>> ['a', 'b', 'c', 'd']
 ```
 
 ```python
-dict_object = read_file("simple_dict.json", "dict")
+dict_object = s.read_file("simple_dict.json", "dict")
 dict_object
 >>> {'a': 1, 'b': 2, 'c': 3}
 ```
 
 ```python
-dataframe_object = read_file("simple_df.json")
+dataframe_object = s.read_file("simple_df.json")
 dataframe_object
 >>>     a   b   c
 0  a1  b1  c1
@@ -653,12 +653,12 @@ dataframe_object
 
 
 ```python
-sddk.write_file("simple_dataframe.csv", dataframe_object)
+s.write_file("simple_dataframe.csv", dataframe_object)
 > Your <class 'pandas.core.frame.DataFrame'> object has been succefully written as "https://sciencedata.dk/files/simple_dataframe.csv"
 ```
 
 ```python
-sddk.read_file("simple_dataframe.csv")
+s.read_file("simple_dataframe.csv")
 ```
 
 
@@ -717,7 +717,7 @@ Sciencedata.dk also enables to produce public files and folders. These files and
 
 ```python
 public_file_code = "3e0a55a4182de313e04523360cecd015"
-gospels_cleaned = s.read_file("https://sciencedata.dk/public/" + public_file_code, "dict")
+gospels_cleaned = sddk.read_file("https://sciencedata.dk/public/" + public_file_code, "dict")
 # of course, you can write it directly:
 # gospels_cleaned = s.read_file("https://sciencedata.dk/public/3e0a55a4182de313e04523360cecd015", "dict")
 ```
@@ -1408,6 +1408,8 @@ c_aristotelicum = sddk.read_file("c_aristotelicum.json", "df", public_folder_cod
 The package is continuously develepod and maintained by [Vojtěch Kaše](http://vojtechkase.cz) as a part of the digital collaborative research workflow of the [SDAM project](https://sdam-au.github.io/sdam-au/) at Aarhus University, Denmark. To cite this package, use:
 
 ## Version history
+* 3.8 - new function s.list_directories(); support for GeoDataFrames to `.parquet` and back
+* 3.7 - fixing public files + version attribute 
 * 3.6 - fixing geojson and relative paths
 * 3.5 - minor bugs
 * 3.4 - fixing issues with feather

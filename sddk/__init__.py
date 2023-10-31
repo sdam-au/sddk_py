@@ -14,9 +14,16 @@ import plotly
 import shapely
 import pyarrow
 import geopandas as gpd
+import re
+import tempfile
+
+
+__version__ = "3.8"
 
 def test_package():
-    print("here we are right now - working on new version of the package")
+    print("current version: ", __version__)
+
+
 
 def make_data_from_object(python_object, file_ending):
     '''
@@ -32,6 +39,9 @@ def make_data_from_object(python_object, file_ending):
         if file_ending == "geojson":
             python_object.to_file("temp.geojson", driver="GeoJSON")
             return (type(python_object), open("temp.geojson", "rb"))
+        if file_ending == "parquet":
+            python_object.to_parquet("temp.parquet")
+            return (type(python_object), open("temp.parquet", "rb"))
         if file_ending == "feather":
             python_object.to_feather("temp.feather", index=False)
             return (type(python_object), open("temp.feather", "rb"))
@@ -79,6 +89,63 @@ def check_filename(path_and_filename, conf):
     else:
         approved_name = path_and_filename
     return approved_name
+
+def read_file(path_and_filename, object_type=None, public_folder=None):
+    """
+    allows reading public files out of authenticated cloudSession
+    """
+    if "http" not in path_and_filename:
+        if public_folder != None:
+            response = requests.get("https://sciencedata.dk/public/" + public_folder + "/" + path_and_filename)
+        else:
+            print("you are trying to access a file out of an authenticated sddk session. In this context, the function works with full URL only")
+    else:
+        response = requests.get(path_and_filename)
+    if object_type==None:
+        object_type="df"
+    if response.ok:
+        try:
+            if object_type == "str":
+                object_to_return = response.text
+            if object_type == "df":
+                if ".csv" in path_and_filename:
+                    object_to_return = pd.read_csv(io.StringIO(response.text), index_col=0)
+                elif ".json" in path_and_filename:
+                    object_to_return = pd.DataFrame(response.json())
+                elif ".feather" in path_and_filename:
+                    object_to_return = pd.read_feather(io.BytesIO(response.content))
+                    for column in object_to_return.columns:
+                        try:
+                            object_to_return[column] = object_to_return[column].str.decode("utf-8")
+                        except:
+                            object_to_return[column] = object_to_return[column]
+                else:
+                    try:
+                        object_to_return = pd.DataFrame(response.json())
+                    except:
+                        object_to_return = response.content
+            if object_type == "gdf":
+                try:
+                    import geopandas as gpd
+                    if "geojson" in path_and_filename.lower():
+                        object_to_return = gpd.read_file(io.BytesIO(response.content), driver='GeoJSON')
+                    elif "feather" in path_and_filename.lower():
+                        object_to_return = gpd.read_feather(io.BytesIO(response.content))
+                    elif "parquet" in path_and_filename.lower():
+                        object_to_return = gpd.read_parquet(io.BytesIO(response.content))
+                    else:
+                        print("Error: either geopandas not properly installed or not a valid geodataframe object")
+                except:
+                    print("Error: either geopandas not properly installed or not a valid geodataframe object")
+            if object_type == "dict":
+                object_to_return = json.loads(response.content)
+            if object_type == "list":
+                object_to_return = json.loads(response.content)
+            return object_to_return
+        except Exception as e:
+            print("file import failed. "+repr(e))
+    else:
+        print("file has not been found; check filename and path.")
 
 class cloudSession:
     def __init__(self, provider=None, shared_folder_name=None, owner=None, group_folder_name=None, user_name=None): ### insert group folder name or leave empty for personal root
@@ -185,8 +252,8 @@ class cloudSession:
         file_ending = approved_name.rpartition(".")[2]
         data_processed = make_data_from_object(python_object, file_ending)
         try:
-            if not approved_name.rpartition(".")[2] in ["txt", "json", "geojson", "csv", "png", "feather"]:
-                new_filename_ending = input("Unsupported file format. Type either \"txt\", \"csv\", \"json\", \"geojson\", \"feather\", or \"png\": ")
+            if not approved_name.rpartition(".")[2] in ["txt", "json", "geojson", "csv", "png", "feather", "parquet"]:
+                new_filename_ending = input("Unsupported file format. Type either \"txt\", \"csv\", \"json\", \"geojson\", \"feather\", \"parquet\", or \"png\": ")
                 approved_name = approved_name.rpartition(".")[0] + "." + new_filename_ending
                 approved_name = self.check_filename(approved_name) ### check whether the file exists for the second time (the ending changed)
             r = s.put(cloud_url + approved_name, data=data_processed[1])
@@ -242,6 +309,8 @@ class cloudSession:
                             object_to_return = gpd.read_file(io.BytesIO(response.content), driver='GeoJSON')
                         elif "feather" in path_and_filename.lower():
                             object_to_return = gpd.read_feather(io.BytesIO(response.content))
+                        elif "parquet" in path_and_filename.lower():
+                            object_to_return = gpd.read_parquet(io.BytesIO(response.content))
                         else:
                             print("Error: either geopandas not properly installed or not a valid geodataframe object")
                     except:
@@ -267,6 +336,16 @@ class cloudSession:
             if filetype in a_str:
                 filenames.append(a_str)
         return filenames
+
+    def list_directories(self, directory=""):
+        resp = self.s.get(self.root_folder_url + directory)
+        soup = BeautifulSoup(resp.content, "html.parser")
+        dirnames = []
+        for a in soup.find_all("a"):
+            a_str = str(a.get_text())
+            if ("." not in a_str) & (a_str != ""):
+                dirnames.append(a_str)
+        return dirnames
 
     def configure_session_and_url(shared_folder_name=None, owner=None): ### insert group folder name or leave empty for personal root
         '''
